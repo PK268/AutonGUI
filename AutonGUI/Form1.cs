@@ -13,12 +13,15 @@ namespace AutonGUI
             public Point coordinate;
             public bool offset;
             public int intakeVelocity;
+            public bool reverse;
             public Node()
             {
+                reverse = true;
                 intakeVelocity = 0;
             }
             public Node(int index, Point coordinate, bool offset, int intakeVelocity)
             {
+                reverse = true;
                 this.offset = offset;
                 this.index = index;
                 this.coordinate = coordinate;
@@ -35,32 +38,47 @@ namespace AutonGUI
 
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
-            Point globalMousePos = Control.MousePosition;
-            Point newNodePos = PointToClient(globalMousePos);
-            newNodePos.Offset(0, -630); //-628 to make 0,0 the bottom left instead of the top left.
-            newNodePos.X = Math.Abs(newNodePos.X);
-            newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
-            moveOrder.AddLast(new Node(steps, newNodePos, false, 0));
+            MouseEventArgs me = (MouseEventArgs)e;
+            switch (me.Button)
+            {
 
-            var button = new Button();
-            Controls.Add(button);
-            button.Location = PointToClient(new Point(globalMousePos.X - 15, globalMousePos.Y - 15));
-            button.BringToFront();
-            button.Size = new Size(30, 30);
-            button.Text = "" + steps;
-            button.Name = "" + steps;
-            button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
-            steps++;
-            //GraphicsExtensions.FillCircle();
+                case MouseButtons.Left:
+                    // Left click
+                    break;
+
+                case MouseButtons.Right:
+
+                    Point globalMousePos = Control.MousePosition;
+                    Point newNodePos = PointToClient(globalMousePos);
+                    newNodePos.Offset(0, -630); //-628 to make 0,0 the bottom left instead of the top left.
+                    newNodePos.X = Math.Abs(newNodePos.X);
+                    newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
+                    moveOrder.AddLast(new Node(steps, newNodePos, false, 0));
+
+                    var button = new Button();
+                    Controls.Add(button);
+                    button.Location = PointToClient(new Point(globalMousePos.X - 15, globalMousePos.Y - 15));
+                    button.BringToFront();
+                    button.Size = new Size(30, 30);
+                    button.Text = "" + steps;
+                    button.Name = "" + steps;
+                    button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
+
+                    Nodes.Items.Add($"{"" + steps} {newNodePos}");
+
+                    steps++;
+                    // Right click
+                    break;
+            }
         }
         public void ShowStepInfo(int index)
         {
-            for (int i = 0; i < index; i++)
+            for (int i = 0; i < steps; i++)
             {
-                this.Controls.Find("" + i, true).First().ForeColor = Color.Black;
+                this.Controls.Find("" + i, true).First().BackColor = Color.White;
             }
             Control indexButton = this.Controls.Find("" + index, true).First();
-            indexButton.ForeColor = Color.Red;
+            indexButton.BackColor = Color.Red;
             lastSelectedStep = index;
             LinkedListNode<Node> traversal = moveOrder.First;
             for (int i = 0; i < index; i++)
@@ -69,6 +87,7 @@ namespace AutonGUI
             }
             IntakeVelocityTextBox.Text = "" + traversal.Value.intakeVelocity;
             CenterIntakeButton.Checked = traversal.Value.offset;
+            ReverseButton.Checked = traversal.Value.reverse;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -83,9 +102,9 @@ namespace AutonGUI
                 int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
                 int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
                 if (!n.offset)
-                    commands += $"\t\tchassis->driveToPoint({{{n.coordinate.X}_in, {n.coordinate.Y}_in}}, true);\n";
+                    commands += $"\t\tchassis->driveToPoint({{{n.coordinate.X}_in, {n.coordinate.Y}_in}}, {n.reverse});\n";
                 else
-                    commands += $"\t\tchassis->driveToPoint({{{n.coordinate.X}_in, {n.coordinate.Y}_in}}, true, 7_in);\n";
+                    commands += $"\t\tchassis->driveToPoint({{{n.coordinate.X}_in, {n.coordinate.Y}_in}}, {n.reverse}, 7_in);\n";
                 if (n.intakeVelocity != 0)
                 {
                     commands += $"\t\tintake.moveVelocity({n.intakeVelocity});\n";
@@ -104,6 +123,13 @@ namespace AutonGUI
             traversal.ValueRef.intakeVelocity = int.Parse(IntakeVelocityTextBox.Text);
 
             traversal.ValueRef.offset = CenterIntakeButton.Checked;
+            traversal.ValueRef.reverse = ReverseButton.Checked;
+        }
+
+        private void Nodes_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            int index = int.Parse(Nodes.SelectedItems[0].ToString().Split(' ').First());
+            ShowStepInfo(index);
         }
     }
 }

@@ -38,13 +38,23 @@
             IntakeVelocityTextBox = new TextBox();
             label3 = new Label();
             UpdateNodeButton = new Button();
-            CenterIntakeButton = new RadioButton();
-            ReverseButton = new RadioButton();
             Nodes = new ListBox();
             Xcord = new NumericUpDown();
             Ycord = new NumericUpDown();
             label4 = new Label();
             label5 = new Label();
+            label6 = new Label();
+            DegRotateTextBox = new TextBox();
+            ReverseButton = new CheckBox();
+            CenterIntakeButton = new CheckBox();
+            DestinationFileDialog1 = new OpenFileDialog();
+            SourceFileDialog2 = new OpenFileDialog();
+            DestFileButton = new Button();
+            SourceFileButton = new Button();
+            SaveJsonButton = new Button();
+            LoadJsonButton = new Button();
+            label7 = new Label();
+            DelayTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).BeginInit();
@@ -109,7 +119,7 @@
             // 
             // IntakeVelocityTextBox
             // 
-            IntakeVelocityTextBox.Location = new Point(583, 190);
+            IntakeVelocityTextBox.Location = new Point(578, 181);
             IntakeVelocityTextBox.Margin = new Padding(3, 2, 3, 2);
             IntakeVelocityTextBox.Name = "IntakeVelocityTextBox";
             IntakeVelocityTextBox.Size = new Size(110, 23);
@@ -118,7 +128,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(697, 190);
+            label3.Location = new Point(692, 181);
             label3.Name = "label3";
             label3.Size = new Size(129, 15);
             label3.TabIndex = 7;
@@ -126,7 +136,7 @@
             // 
             // UpdateNodeButton
             // 
-            UpdateNodeButton.Location = new Point(583, 156);
+            UpdateNodeButton.Location = new Point(578, 126);
             UpdateNodeButton.Margin = new Padding(3, 2, 3, 2);
             UpdateNodeButton.Name = "UpdateNodeButton";
             UpdateNodeButton.Size = new Size(109, 22);
@@ -135,50 +145,30 @@
             UpdateNodeButton.UseVisualStyleBackColor = true;
             UpdateNodeButton.Click += UpdateNodeButton_Click;
             // 
-            // CenterIntakeButton
-            // 
-            CenterIntakeButton.AutoSize = true;
-            CenterIntakeButton.Location = new Point(583, 245);
-            CenterIntakeButton.Margin = new Padding(3, 2, 3, 2);
-            CenterIntakeButton.Name = "CenterIntakeButton";
-            CenterIntakeButton.Size = new Size(136, 19);
-            CenterIntakeButton.TabIndex = 9;
-            CenterIntakeButton.TabStop = true;
-            CenterIntakeButton.Text = "Center around intake";
-            CenterIntakeButton.UseVisualStyleBackColor = true;
-            // 
-            // ReverseButton
-            // 
-            ReverseButton.AutoSize = true;
-            ReverseButton.Location = new Point(583, 222);
-            ReverseButton.Margin = new Padding(3, 2, 3, 2);
-            ReverseButton.Name = "ReverseButton";
-            ReverseButton.Size = new Size(105, 19);
-            ReverseButton.TabIndex = 10;
-            ReverseButton.TabStop = true;
-            ReverseButton.Text = "Drive in reverse";
-            ReverseButton.UseVisualStyleBackColor = true;
-            // 
             // Nodes
             // 
             Nodes.FormattingEnabled = true;
             Nodes.ItemHeight = 15;
-            Nodes.Location = new Point(578, 315);
+            Nodes.Location = new Point(578, 330);
             Nodes.Name = "Nodes";
-            Nodes.Size = new Size(266, 229);
+            Nodes.Size = new Size(266, 214);
             Nodes.TabIndex = 13;
             Nodes.SelectedIndexChanged += Nodes_SelectedIndexChanged_1;
             // 
             // Xcord
             // 
-            Xcord.Location = new Point(609, 276);
+            Xcord.Location = new Point(613, 300);
+            Xcord.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            Xcord.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
             Xcord.Name = "Xcord";
             Xcord.Size = new Size(56, 23);
             Xcord.TabIndex = 14;
             // 
             // Ycord
             // 
-            Ycord.Location = new Point(697, 276);
+            Ycord.Location = new Point(701, 300);
+            Ycord.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            Ycord.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
             Ycord.Name = "Ycord";
             Ycord.Size = new Size(61, 23);
             Ycord.TabIndex = 15;
@@ -186,7 +176,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(589, 278);
+            label4.Location = new Point(593, 302);
             label4.Name = "label4";
             label4.Size = new Size(14, 15);
             label4.TabIndex = 16;
@@ -195,24 +185,138 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(679, 278);
+            label5.Location = new Point(683, 302);
             label5.Name = "label5";
             label5.Size = new Size(14, 15);
             label5.TabIndex = 17;
             label5.Text = "Y";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(692, 152);
+            label6.Name = "label6";
+            label6.RightToLeft = RightToLeft.No;
+            label6.Size = new Size(89, 15);
+            label6.TabIndex = 19;
+            label6.Text = "Deg rotate after";
+            // 
+            // DegRotateTextBox
+            // 
+            DegRotateTextBox.Location = new Point(578, 152);
+            DegRotateTextBox.Margin = new Padding(3, 2, 3, 2);
+            DegRotateTextBox.Name = "DegRotateTextBox";
+            DegRotateTextBox.Size = new Size(110, 23);
+            DegRotateTextBox.TabIndex = 18;
+            // 
+            // ReverseButton
+            // 
+            ReverseButton.AutoSize = true;
+            ReverseButton.Location = new Point(587, 247);
+            ReverseButton.Name = "ReverseButton";
+            ReverseButton.Size = new Size(106, 19);
+            ReverseButton.TabIndex = 20;
+            ReverseButton.Text = "Drive in reverse";
+            ReverseButton.UseVisualStyleBackColor = true;
+            // 
+            // CenterIntakeButton
+            // 
+            CenterIntakeButton.AutoSize = true;
+            CenterIntakeButton.Location = new Point(587, 272);
+            CenterIntakeButton.Name = "CenterIntakeButton";
+            CenterIntakeButton.Size = new Size(137, 19);
+            CenterIntakeButton.TabIndex = 21;
+            CenterIntakeButton.Text = "Center around intake";
+            CenterIntakeButton.UseVisualStyleBackColor = true;
+            // 
+            // DestinationFileDialog1
+            // 
+            DestinationFileDialog1.FileName = "DestinationFileDialog1";
+            // 
+            // SourceFileDialog2
+            // 
+            SourceFileDialog2.FileName = "SourceFileDialog2";
+            // 
+            // DestFileButton
+            // 
+            DestFileButton.Location = new Point(764, 47);
+            DestFileButton.Name = "DestFileButton";
+            DestFileButton.Size = new Size(75, 23);
+            DestFileButton.TabIndex = 22;
+            DestFileButton.Text = "Open";
+            DestFileButton.UseVisualStyleBackColor = true;
+            DestFileButton.Click += DestFileButton_Click;
+            // 
+            // SourceFileButton
+            // 
+            SourceFileButton.Location = new Point(764, 79);
+            SourceFileButton.Name = "SourceFileButton";
+            SourceFileButton.Size = new Size(75, 23);
+            SourceFileButton.TabIndex = 23;
+            SourceFileButton.Text = "Open";
+            SourceFileButton.UseVisualStyleBackColor = true;
+            SourceFileButton.Click += SourceFileButton_Click;
+            // 
+            // SaveJsonButton
+            // 
+            SaveJsonButton.Location = new Point(683, 20);
+            SaveJsonButton.Margin = new Padding(3, 2, 3, 2);
+            SaveJsonButton.Name = "SaveJsonButton";
+            SaveJsonButton.Size = new Size(82, 22);
+            SaveJsonButton.TabIndex = 24;
+            SaveJsonButton.Text = "Save Json";
+            SaveJsonButton.UseVisualStyleBackColor = true;
+            SaveJsonButton.Click += SaveJsonButton_Click;
+            // 
+            // LoadJsonButton
+            // 
+            LoadJsonButton.Location = new Point(764, 20);
+            LoadJsonButton.Margin = new Padding(3, 2, 3, 2);
+            LoadJsonButton.Name = "LoadJsonButton";
+            LoadJsonButton.Size = new Size(82, 22);
+            LoadJsonButton.TabIndex = 25;
+            LoadJsonButton.Text = "Load Json";
+            LoadJsonButton.UseVisualStyleBackColor = true;
+            LoadJsonButton.Click += LoadJsonButton_Click;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(692, 212);
+            label7.Name = "label7";
+            label7.RightToLeft = RightToLeft.No;
+            label7.Size = new Size(63, 15);
+            label7.TabIndex = 27;
+            label7.Text = "Delay after";
+            // 
+            // DelayTextBox
+            // 
+            DelayTextBox.Location = new Point(578, 212);
+            DelayTextBox.Margin = new Padding(3, 2, 3, 2);
+            DelayTextBox.Name = "DelayTextBox";
+            DelayTextBox.Size = new Size(110, 23);
+            DelayTextBox.TabIndex = 26;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(856, 560);
+            Controls.Add(label7);
+            Controls.Add(DelayTextBox);
+            Controls.Add(LoadJsonButton);
+            Controls.Add(SaveJsonButton);
+            Controls.Add(SourceFileButton);
+            Controls.Add(DestFileButton);
+            Controls.Add(CenterIntakeButton);
+            Controls.Add(ReverseButton);
+            Controls.Add(label6);
+            Controls.Add(DegRotateTextBox);
             Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(Ycord);
             Controls.Add(Xcord);
             Controls.Add(Nodes);
-            Controls.Add(ReverseButton);
-            Controls.Add(CenterIntakeButton);
             Controls.Add(UpdateNodeButton);
             Controls.Add(label3);
             Controls.Add(IntakeVelocityTextBox);
@@ -243,12 +347,22 @@
         private TextBox IntakeVelocityTextBox;
         private Label label3;
         private Button UpdateNodeButton;
-        private RadioButton CenterIntakeButton;
-        private RadioButton ReverseButton;
         private ListBox Nodes;
         private NumericUpDown Xcord;
         private NumericUpDown Ycord;
         private Label label4;
         private Label label5;
+        private Label label6;
+        private TextBox DegRotateTextBox;
+        private CheckBox ReverseButton;
+        private CheckBox CenterIntakeButton;
+        private OpenFileDialog DestinationFileDialog1;
+        private OpenFileDialog SourceFileDialog2;
+        private Button DestFileButton;
+        private Button SourceFileButton;
+        private Button SaveJsonButton;
+        private Button LoadJsonButton;
+        private Label label7;
+        private TextBox DelayTextBox;
     }
 }

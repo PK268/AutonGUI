@@ -55,6 +55,7 @@
             LoadJsonButton = new Button();
             label7 = new Label();
             DelayTextBox = new TextBox();
+            DeleteButton = new Button();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).BeginInit();
@@ -297,11 +298,22 @@
             DelayTextBox.Size = new Size(110, 23);
             DelayTextBox.TabIndex = 26;
             // 
+            // DeleteButton
+            // 
+            DeleteButton.Location = new Point(771, 300);
+            DeleteButton.Name = "DeleteButton";
+            DeleteButton.Size = new Size(75, 23);
+            DeleteButton.TabIndex = 28;
+            DeleteButton.Text = "Delete";
+            DeleteButton.UseVisualStyleBackColor = true;
+            DeleteButton.Click += DeleteButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(856, 560);
+            Controls.Add(DeleteButton);
             Controls.Add(label7);
             Controls.Add(DelayTextBox);
             Controls.Add(LoadJsonButton);
@@ -364,5 +376,6 @@
         private Button LoadJsonButton;
         private Label label7;
         private TextBox DelayTextBox;
+        private Button DeleteButton;
     }
 }

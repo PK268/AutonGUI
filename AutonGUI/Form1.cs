@@ -13,7 +13,7 @@ namespace AutonGUI
         const double resizeY = 2.14669051878;
         static int steps;
         static int lastSelectedStep;
-        public struct Node
+        public class Node
         {
             public int index;
             public Point coordinate;
@@ -38,15 +38,16 @@ namespace AutonGUI
                 this.intakeVelocity = intakeVelocity;
             }
         }
-        static LinkedList<Node> moveOrder = new LinkedList<Node>();
+        static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
+        static Tuple<double, double> currentPos;
         public Form1()
         {
             InitializeComponent();
             steps = 0;
             lastSelectedStep = 0;
+            currentPos = new Tuple<double, double>(0, 0);
         }
-
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
@@ -64,7 +65,7 @@ namespace AutonGUI
                     newNodePos.Offset(0, -559); //-559 to make 0,0 the bottom left instead of the top left.
                     newNodePos.X = newNodePos.X;
                     newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
-                    moveOrder.AddLast(new Node(steps, new Point((int)((newNodePos.X) * resizeX) - zero.X, (int)((newNodePos.Y) * resizeY)-zero.Y), false, 0));
+                    moveOrder.Add(new Node(steps, new Point((int)((newNodePos.X) * resizeX) - zero.X, (int)((newNodePos.Y) * resizeY) - zero.Y), false, 0));
 
                     var button = new Button();
                     Controls.Add(button);
@@ -84,7 +85,7 @@ namespace AutonGUI
         }
         private void SimulateRightClick(Node n)
         {
-            Point newNodePos = new Point((int)(((n.coordinate.X) + zero.X) / resizeX) - 15 , Math.Abs(559 - (int)((n.coordinate.Y + zero.Y) / resizeY)) - 15);
+            Point newNodePos = new Point((int)(((n.coordinate.X) + zero.X) / resizeX) - 15, Math.Abs(559 - (int)((n.coordinate.Y + zero.Y) / resizeY)) - 15);
 
             var button = new Button();
             Controls.Add(button);
@@ -101,6 +102,8 @@ namespace AutonGUI
         }
         public void ShowStepInfo(int index)
         {
+            if(Nodes.Items.Count > index && (lastSelectedStep != index))
+                Nodes.SelectedIndex = index;
             for (int i = 0; i < steps; i++)
             {
                 this.Controls.Find("" + i, true).First().BackColor = Color.White;
@@ -108,18 +111,14 @@ namespace AutonGUI
             Control indexButton = this.Controls.Find("" + index, true).First();
             indexButton.BackColor = Color.Red;
             lastSelectedStep = index;
-            LinkedListNode<Node> traversal = moveOrder.First;
-            for (int i = 0; i < index; i++)
-            {
-                traversal = traversal.Next;
-            }
-            IntakeVelocityTextBox.Text = "" + traversal.Value.intakeVelocity;
-            CenterIntakeButton.Checked = traversal.Value.offset;
-            ReverseButton.Checked = traversal.Value.reverse;
-            Xcord.Value = (int)(traversal.Value.coordinate.X);
-            Ycord.Value = (int)(traversal.Value.coordinate.Y);
-            DegRotateTextBox.Text = "" + traversal.Value.deg;
-            DelayTextBox.Text = "" + traversal.Value.delay;
+            Node traversal = moveOrder[index];
+            IntakeVelocityTextBox.Text = "" + traversal.intakeVelocity;
+            CenterIntakeButton.Checked = traversal.offset;
+            ReverseButton.Checked = traversal.reverse;
+            Xcord.Value = (int)(traversal.coordinate.X);
+            Ycord.Value = (int)(traversal.coordinate.Y);
+            DegRotateTextBox.Text = "" + traversal.deg;
+            DelayTextBox.Text = "" + traversal.delay;
         }
 
         //AKA the compiler
@@ -135,9 +134,9 @@ namespace AutonGUI
                 int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
                 int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
                 if (!n.offset)
-                    commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse});\n";
+                    commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()});\n";
                 else
-                    commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse}, 7_in);\n";
+                    commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()}, 7_in);\n";
                 if (n.deg != 0)
                     commands += $"\t\tchassis->turnToAngle({n.deg}_deg);\n";
                 if (n.intakeVelocity != 0)
@@ -151,31 +150,30 @@ namespace AutonGUI
 
         private void UpdateNodeButton_Click(object sender, EventArgs e)
         {
-            LinkedListNode<Node> traversal = moveOrder.First;
-            for (int i = 0; i < lastSelectedStep; i++)
-            {
-                traversal = traversal.Next;
-            }
-            try { traversal.ValueRef.intakeVelocity = int.Parse(IntakeVelocityTextBox.Text); }
-            catch { traversal.ValueRef.intakeVelocity = 0; ShowStepInfo(lastSelectedStep); }
+            Node traversal = moveOrder[Nodes.SelectedIndex];
+            try { traversal.intakeVelocity = int.Parse(IntakeVelocityTextBox.Text); }
+            catch { traversal.intakeVelocity = 0; ShowStepInfo(lastSelectedStep); }
 
-            traversal.ValueRef.offset = CenterIntakeButton.Checked;
-            traversal.ValueRef.reverse = ReverseButton.Checked;
-            traversal.ValueRef.coordinate = new Point((int)Xcord.Value, (int)Ycord.Value);
+            traversal.offset = CenterIntakeButton.Checked;
+            traversal.reverse = ReverseButton.Checked;
+            traversal.coordinate = new Point((int)Xcord.Value, (int)Ycord.Value);
             Controls.Find("" + lastSelectedStep, true).First().Location = new Point((int)(((double)Xcord.Value + zero.X) / resizeX) - 15, Math.Abs((int)(((double)Ycord.Value + zero.Y) / resizeY) - 559 + 15));
-            try { traversal.ValueRef.deg = int.Parse(DegRotateTextBox.Text); }
-            catch { traversal.ValueRef.deg = 0; ShowStepInfo(lastSelectedStep); }
-            try{ traversal.ValueRef.delay = int.Parse(DelayTextBox.Text); }
-            catch { traversal.ValueRef.delay = 0; ShowStepInfo(lastSelectedStep); }
+            try { traversal.deg = int.Parse(DegRotateTextBox.Text); }
+            catch { traversal.deg = 0; ShowStepInfo(lastSelectedStep); }
+            try { traversal.delay = int.Parse(DelayTextBox.Text); }
+            catch { traversal.delay = 0; ShowStepInfo(lastSelectedStep); }
 
-            Nodes.Items[lastSelectedStep] = lastSelectedStep + " " + new Point(traversal.ValueRef.coordinate.X, traversal.ValueRef.coordinate.Y);
-            }
+            Nodes.Items[lastSelectedStep] = lastSelectedStep + " " + new Point(traversal.coordinate.X, traversal.coordinate.Y);
+        }
 
         private void Nodes_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            int index = int.Parse(Nodes.SelectedItems[0].ToString().Split(' ').First());
-            lastSelectedStep = index;
-            ShowStepInfo(index);
+            if (Nodes.SelectedItems.Count != 0)
+            {
+                int index = int.Parse(Nodes.SelectedItems[0].ToString().Split(' ').First());
+                lastSelectedStep = index;
+                ShowStepInfo(index);
+            }
         }
 
         private void DestFileButton_Click(object sender, EventArgs e)
@@ -201,11 +199,46 @@ namespace AutonGUI
         {
             DestinationFileDialog1.ShowDialog(this);
             string endJson = DestinationFileDialog1.FileName;
-            LinkedList<Node> read = JsonConvert.DeserializeObject<LinkedList<Node>>(File.ReadAllText(endJson));
+            List<Node> read = JsonConvert.DeserializeObject<List<Node>>(File.ReadAllText(endJson));
             moveOrder = read;
             foreach (Node n in read)
             {
                 SimulateRightClick(n);
+            }
+        }
+
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            if (Nodes.SelectedItems.Count != 0)
+            {
+                int index = Nodes.SelectedIndex;
+                moveOrder.RemoveAt(index);
+                Control[] toRemove = Controls.Find("" + index, true);
+                Controls.Remove(toRemove.Last());
+                Nodes.ClearSelected();
+                Nodes.Items.RemoveAt(index);
+                CorrectNames();
+                steps--;
+                lastSelectedStep = -1;
+            }
+        }
+        private void CorrectNames()
+        {
+            int count = 0;
+            int deficit = 0;
+            for(int i = 0; i <= steps;i++)
+            {
+                if (count != i)
+                {
+                    deficit = i-count;
+                }
+                if (Controls.Find("" + i,true).Length != 0)
+                {
+                    Controls.Find("" + i, true)[0].Text = "" + (i - deficit);
+                    Controls.Find("" + i, true)[0].Name = "" + (i - deficit);
+                    Nodes.Items[i-deficit] = "" + (i - deficit) + " {X=" + moveOrder[i - deficit].coordinate.X + ",Y=" + moveOrder[i - deficit].coordinate.Y+"}";
+                    count++;
+                }
             }
         }
     }

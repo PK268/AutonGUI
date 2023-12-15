@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace AutonGUI
 {
-    public partial class Form1 : Form
+    public partial class AutonGUI : Form
     {
         const double resizeX = 2.14669051878;
         const double resizeY = 2.14669051878;
@@ -41,9 +41,7 @@ namespace AutonGUI
         }
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
-        static Tuple<double, double> currentPos;
-        static double heading;
-        public Form1()
+        public AutonGUI()
         {
             InitializeComponent();
             steps = 0;
@@ -54,7 +52,7 @@ namespace AutonGUI
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
             double angle = 0;
-            
+
             if (current.X == destination.X) //if point is directly behind robot
             {
                 if (destination.Y < current.Y)
@@ -64,7 +62,7 @@ namespace AutonGUI
             }
             else if (current.Y == destination.Y) //if point is directly to the left or directly to the right of the robot
             {
-                if(destination.X < current.X)
+                if (destination.X < current.X)
                 {
                     angle = -90;
                 }
@@ -107,7 +105,7 @@ namespace AutonGUI
              */
 
             angle = angle - currentHeading;
-            if(angle > 180)
+            if (angle > 180)
             {
                 angle = -1 * (angle - 180);
             }
@@ -129,6 +127,11 @@ namespace AutonGUI
             }
             return angle;
         }
+        private double PointDistance(Point current, Point destination)
+        {
+            return Math.Sqrt(Math.Pow(destination.Y - current.Y, 2) + Math.Pow(destination.X - current.X, 2));
+        }
+
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
@@ -210,14 +213,19 @@ namespace AutonGUI
             string source = File.ReadAllText(SourceFileTextBox.Text);
             string[] split = source.Split("[GUIMARKER]");
             string commands = "";
+            Tuple<double, double> currentPos = new Tuple<double,double>(0,0); //inches X,Y
+            double heading = 0; //degrees -180 -> 180 range
             foreach (Node n in moveOrder)
             {                  //turning it into feet * 12in         getting inches leftover from feet
                 int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
                 int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
+
+                /*
                 if (!n.offset)
                     commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()});\n";
                 else
                     commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()}, 7_in);\n";
+                */
                 if (n.deg != 0)
                     commands += $"\t\tchassis->turnToAngle({n.deg}_deg);\n";
                 if (n.intakeVelocity != 0)

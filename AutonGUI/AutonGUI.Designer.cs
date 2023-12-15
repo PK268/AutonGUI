@@ -1,6 +1,6 @@
 ﻿namespace AutonGUI
 {
-    partial class Form1
+    partial class AutonGUI
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutonGUI));
             OverUnderBG = new PictureBox();
             SaveButton = new Button();
             SaveLocation = new TextBox();

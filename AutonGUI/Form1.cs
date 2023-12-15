@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
 
 using System;
 using System.CodeDom;
@@ -41,12 +42,92 @@ namespace AutonGUI
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
         static Tuple<double, double> currentPos;
+        static double heading;
         public Form1()
         {
             InitializeComponent();
             steps = 0;
             lastSelectedStep = 0;
             currentPos = new Tuple<double, double>(0, 0);
+            heading = 0;
+        }
+        double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
+        {
+            double angle = 0;
+            
+            if (current.X == destination.X) //if point is directly behind robot
+            {
+                if (destination.Y < current.Y)
+                    angle = 180;
+                else
+                    angle = 0;
+            }
+            else if (current.Y == destination.Y) //if point is directly to the left or directly to the right of the robot
+            {
+                if(destination.X < current.X)
+                {
+                    angle = -90;
+                }
+                else
+                {
+                    angle = 90;
+                }
+            }
+            else //if point is not on axis
+            {
+                if (current.Y < destination.Y) //if point is in quad 1 or 2
+                {
+                    if (current.X < destination.X) // if point is in quad 1
+                    {
+                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
+                    }
+                    else if (current.X > destination.X) //if point is in quad 2
+                    {
+                        angle = -1 * (Math.Atan((destination.Y - current.Y) / (destination.X - current.X)));
+                    }
+                }
+                else if (current.Y - destination.Y > 0) //if point is in quad 3 or 4
+                {
+                    if (current.X < destination.X) // if point is in quad 3
+                    {
+                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
+                        angle = (180 - angle);
+                    }
+                    else if (current.X > destination.X) //if point is in quad 4
+                    {
+                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
+                        angle = -1 * (180 - angle);
+                    }
+                }
+            }
+
+            /*
+                by this point we have an angle as if the robot was pointed up the y axis. Now let's
+                correct for the robot's current heading so we don't overturn
+             */
+
+            angle = angle - currentHeading;
+            if(angle > 180)
+            {
+                angle = -1 * (angle - 180);
+            }
+            else if (angle < -180)
+            {
+                angle = -1 * (angle + 180);
+            }
+
+            /*
+                now we have a correct angle to turn. Now we need to account for if we're about to turn backwards
+             */
+
+            if (backwards)
+            {
+                if (angle < 0)
+                    angle += 180;
+                else if (angle > 0)
+                    angle -= 180;
+            }
+            return angle;
         }
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
@@ -102,7 +183,7 @@ namespace AutonGUI
         }
         public void ShowStepInfo(int index)
         {
-            if(Nodes.Items.Count > index && (lastSelectedStep != index))
+            if (Nodes.Items.Count > index && (lastSelectedStep != index))
                 Nodes.SelectedIndex = index;
             for (int i = 0; i < steps; i++)
             {
@@ -222,21 +303,22 @@ namespace AutonGUI
                 lastSelectedStep = -1;
             }
         }
+
         private void CorrectNames()
         {
             int count = 0;
             int deficit = 0;
-            for(int i = 0; i <= steps;i++)
+            for (int i = 0; i <= steps; i++)
             {
                 if (count != i)
                 {
-                    deficit = i-count;
+                    deficit = i - count;
                 }
-                if (Controls.Find("" + i,true).Length != 0)
+                if (Controls.Find("" + i, true).Length != 0)
                 {
                     Controls.Find("" + i, true)[0].Text = "" + (i - deficit);
                     Controls.Find("" + i, true)[0].Name = "" + (i - deficit);
-                    Nodes.Items[i-deficit] = "" + (i - deficit) + " {X=" + moveOrder[i - deficit].coordinate.X + ",Y=" + moveOrder[i - deficit].coordinate.Y+"}";
+                    Nodes.Items[i - deficit] = "" + (i - deficit) + " {X=" + moveOrder[i - deficit].coordinate.X + ",Y=" + moveOrder[i - deficit].coordinate.Y + "}";
                     count++;
                 }
             }

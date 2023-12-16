@@ -41,6 +41,7 @@ namespace AutonGUI
         }
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
+        static double zeroAngle = 0;
         public AutonGUI()
         {
             InitializeComponent();
@@ -214,7 +215,7 @@ namespace AutonGUI
             string[] split = source.Split("[GUIMARKER]");
             string commands = "";
             Point currentPos = new Point(); //gridUnits X,Y
-            double heading = 0; //degrees -180 -> 180 range
+            double heading = zeroAngle; //degrees -180 -> 180 range
             foreach (Node n in moveOrder)
             {                  //turning it into feet * 12in         getting inches leftover from feet
                 int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
@@ -357,6 +358,17 @@ namespace AutonGUI
                     count++;
                 }
             }
+        }
+
+        private void SpawnUpdateButton_Click(object sender, EventArgs e)
+        {
+            zero = new Point((int)SpawnXUpDown.Value, (int)SpawnYUpDown.Value);
+
+            SP.Location = new Point(
+                    (int)((zero.X / resizeX) - 15),
+                    Math.Abs(559 - (int)((zero.Y) / resizeY)) - 15
+                    );
+            zeroAngle = (double)SpawnAngleUpDown.Value;
         }
     }
 }

@@ -56,9 +56,23 @@
             label7 = new Label();
             DelayTextBox = new TextBox();
             DeleteButton = new Button();
+            label8 = new Label();
+            SpawnY = new Label();
+            SpawnX = new Label();
+            SpawnYUpDown = new NumericUpDown();
+            SpawnXUpDown = new NumericUpDown();
+            SpawnAngleUpDown = new NumericUpDown();
+            SpawnAngle = new Label();
+            AngleReferencePictureBox = new PictureBox();
+            SP = new Button();
+            SpawnUpdateButton = new Button();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnYUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnXUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnAngleUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)AngleReferencePictureBox).BeginInit();
             SuspendLayout();
             // 
             // OverUnderBG
@@ -144,7 +158,7 @@
             // 
             // UpdateNodeButton
             // 
-            UpdateNodeButton.BackColor = Color.DimGray;
+            UpdateNodeButton.BackColor = Color.Green;
             UpdateNodeButton.FlatAppearance.BorderColor = Color.Black;
             UpdateNodeButton.FlatAppearance.BorderSize = 0;
             UpdateNodeButton.ForeColor = Color.White;
@@ -163,15 +177,15 @@
             Nodes.ForeColor = Color.Black;
             Nodes.FormattingEnabled = true;
             Nodes.ItemHeight = 15;
-            Nodes.Location = new Point(578, 330);
+            Nodes.Location = new Point(587, 326);
             Nodes.Name = "Nodes";
-            Nodes.Size = new Size(266, 214);
+            Nodes.Size = new Size(129, 184);
             Nodes.TabIndex = 13;
             Nodes.SelectedIndexChanged += Nodes_SelectedIndexChanged_1;
             // 
             // Xcord
             // 
-            Xcord.Location = new Point(613, 300);
+            Xcord.Location = new Point(583, 297);
             Xcord.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             Xcord.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
             Xcord.Name = "Xcord";
@@ -180,7 +194,7 @@
             // 
             // Ycord
             // 
-            Ycord.Location = new Point(701, 300);
+            Ycord.Location = new Point(663, 297);
             Ycord.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             Ycord.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
             Ycord.Name = "Ycord";
@@ -191,7 +205,7 @@
             // 
             label4.AutoSize = true;
             label4.ForeColor = Color.White;
-            label4.Location = new Point(593, 302);
+            label4.Location = new Point(563, 299);
             label4.Name = "label4";
             label4.Size = new Size(14, 15);
             label4.TabIndex = 16;
@@ -201,7 +215,7 @@
             // 
             label5.AutoSize = true;
             label5.ForeColor = Color.White;
-            label5.Location = new Point(683, 302);
+            label5.Location = new Point(645, 299);
             label5.Name = "label5";
             label5.Size = new Size(14, 15);
             label5.TabIndex = 17;
@@ -220,6 +234,7 @@
             // 
             // DegRotateTextBox
             // 
+            DegRotateTextBox.Enabled = false;
             DegRotateTextBox.Location = new Point(578, 152);
             DegRotateTextBox.Margin = new Padding(3, 2, 3, 2);
             DegRotateTextBox.Name = "DegRotateTextBox";
@@ -336,11 +351,11 @@
             // 
             // DeleteButton
             // 
-            DeleteButton.BackColor = Color.DimGray;
+            DeleteButton.BackColor = Color.Firebrick;
             DeleteButton.FlatAppearance.BorderColor = Color.Black;
             DeleteButton.FlatAppearance.BorderSize = 0;
             DeleteButton.ForeColor = Color.White;
-            DeleteButton.Location = new Point(771, 300);
+            DeleteButton.Location = new Point(612, 521);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 28;
@@ -348,12 +363,129 @@
             DeleteButton.UseVisualStyleBackColor = false;
             DeleteButton.Click += DeleteButton_Click;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.ForeColor = Color.White;
+            label8.Location = new Point(764, 305);
+            label8.Name = "label8";
+            label8.RightToLeft = RightToLeft.No;
+            label8.Size = new Size(73, 15);
+            label8.TabIndex = 29;
+            label8.Text = "Spawn Point";
+            // 
+            // SpawnY
+            // 
+            SpawnY.AutoSize = true;
+            SpawnY.ForeColor = Color.White;
+            SpawnY.Location = new Point(752, 360);
+            SpawnY.Name = "SpawnY";
+            SpawnY.Size = new Size(14, 15);
+            SpawnY.TabIndex = 33;
+            SpawnY.Text = "Y";
+            // 
+            // SpawnX
+            // 
+            SpawnX.AutoSize = true;
+            SpawnX.ForeColor = Color.White;
+            SpawnX.Location = new Point(752, 331);
+            SpawnX.Name = "SpawnX";
+            SpawnX.Size = new Size(14, 15);
+            SpawnX.TabIndex = 32;
+            SpawnX.Text = "X";
+            // 
+            // SpawnYUpDown
+            // 
+            SpawnYUpDown.Location = new Point(772, 358);
+            SpawnYUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            SpawnYUpDown.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
+            SpawnYUpDown.Name = "SpawnYUpDown";
+            SpawnYUpDown.Size = new Size(61, 23);
+            SpawnYUpDown.TabIndex = 31;
+            SpawnYUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            // 
+            // SpawnXUpDown
+            // 
+            SpawnXUpDown.Location = new Point(772, 329);
+            SpawnXUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            SpawnXUpDown.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
+            SpawnXUpDown.Name = "SpawnXUpDown";
+            SpawnXUpDown.Size = new Size(61, 23);
+            SpawnXUpDown.TabIndex = 30;
+            SpawnXUpDown.Value = new decimal(new int[] { 300, 0, 0, 0 });
+            // 
+            // SpawnAngleUpDown
+            // 
+            SpawnAngleUpDown.Location = new Point(772, 387);
+            SpawnAngleUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            SpawnAngleUpDown.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
+            SpawnAngleUpDown.Name = "SpawnAngleUpDown";
+            SpawnAngleUpDown.Size = new Size(61, 23);
+            SpawnAngleUpDown.TabIndex = 34;
+            // 
+            // SpawnAngle
+            // 
+            SpawnAngle.AutoSize = true;
+            SpawnAngle.ForeColor = Color.White;
+            SpawnAngle.Location = new Point(730, 389);
+            SpawnAngle.Name = "SpawnAngle";
+            SpawnAngle.RightToLeft = RightToLeft.No;
+            SpawnAngle.Size = new Size(38, 15);
+            SpawnAngle.TabIndex = 35;
+            SpawnAngle.Text = "Angle";
+            // 
+            // AngleReferencePictureBox
+            // 
+            AngleReferencePictureBox.BackColor = Color.DimGray;
+            AngleReferencePictureBox.Image = Properties.Resources.HeadingGraph;
+            AngleReferencePictureBox.Location = new Point(722, 422);
+            AngleReferencePictureBox.Name = "AngleReferencePictureBox";
+            AngleReferencePictureBox.Size = new Size(134, 137);
+            AngleReferencePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            AngleReferencePictureBox.TabIndex = 36;
+            AngleReferencePictureBox.TabStop = false;
+            // 
+            // SP
+            // 
+            SP.BackColor = Color.DarkSlateGray;
+            SP.Location = new Point(124, 497);
+            SP.Name = "SP";
+            SP.Size = new Size(30, 30);
+            SP.TabIndex = 37;
+            SP.Text = "SP";
+            SP.UseVisualStyleBackColor = false;
+            // 
+            // SpawnUpdateButton
+            // 
+            SpawnUpdateButton.BackColor = Color.DarkSlateGray;
+            SpawnUpdateButton.FlatAppearance.BorderColor = Color.Black;
+            SpawnUpdateButton.FlatAppearance.BorderSize = 0;
+            SpawnUpdateButton.ForeColor = Color.White;
+            SpawnUpdateButton.Location = new Point(737, 272);
+            SpawnUpdateButton.Margin = new Padding(3, 2, 3, 2);
+            SpawnUpdateButton.Name = "SpawnUpdateButton";
+            SpawnUpdateButton.Size = new Size(109, 22);
+            SpawnUpdateButton.TabIndex = 38;
+            SpawnUpdateButton.Text = "Update Spawn";
+            SpawnUpdateButton.UseVisualStyleBackColor = false;
+            SpawnUpdateButton.Click += SpawnUpdateButton_Click;
+            // 
             // AutonGUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
             ClientSize = new Size(856, 560);
+            Controls.Add(SpawnUpdateButton);
+            Controls.Add(SP);
+            Controls.Add(AngleReferencePictureBox);
+            Controls.Add(SpawnAngle);
+            Controls.Add(SpawnAngleUpDown);
+            Controls.Add(SpawnY);
+            Controls.Add(SpawnX);
+            Controls.Add(SpawnYUpDown);
+            Controls.Add(SpawnXUpDown);
+            Controls.Add(label8);
             Controls.Add(DeleteButton);
             Controls.Add(label7);
             Controls.Add(DelayTextBox);
@@ -382,10 +514,14 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 2, 3, 2);
             Name = "AutonGUI";
-            Text = "34690A Auton GUI";
+            Text = "34690A Auton GUI v0.2";
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).EndInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).EndInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnYUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnXUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)SpawnAngleUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)AngleReferencePictureBox).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -419,5 +555,15 @@
         private Label label7;
         private TextBox DelayTextBox;
         private Button DeleteButton;
+        private Label label8;
+        private Label SpawnY;
+        private Label SpawnX;
+        private NumericUpDown SpawnYUpDown;
+        private NumericUpDown SpawnXUpDown;
+        private NumericUpDown SpawnAngleUpDown;
+        private Label SpawnAngle;
+        private PictureBox AngleReferencePictureBox;
+        private Button SP;
+        private Button SpawnUpdateButton;
     }
 }

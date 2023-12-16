@@ -46,12 +46,11 @@ namespace AutonGUI
             InitializeComponent();
             steps = 0;
             lastSelectedStep = 0;
-            currentPos = new Tuple<double, double>(0, 0);
-            heading = 0;
         }
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
             double angle = 0;
+            double rTD = (double)180 / Math.PI;
 
             if (current.X == destination.X) //if point is directly behind robot
             {
@@ -77,28 +76,29 @@ namespace AutonGUI
                 {
                     if (current.X < destination.X) // if point is in quad 1
                     {
-                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
+                        angle = Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
+                        angle *= rTD;
                     }
                     else if (current.X > destination.X) //if point is in quad 2
                     {
-                        angle = -1 * (Math.Atan((destination.Y - current.Y) / (destination.X - current.X)));
+                        angle = -1 * (Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y)));
+                        angle *= rTD;
                     }
                 }
                 else if (current.Y - destination.Y > 0) //if point is in quad 3 or 4
                 {
-                    if (current.X < destination.X) // if point is in quad 3
+                    if (current.X > destination.X) // if point is in quad 3
                     {
-                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
-                        angle = (180 - angle);
+                        angle = Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
+                        angle *= rTD;
                     }
-                    else if (current.X > destination.X) //if point is in quad 4
+                    else if (current.X < destination.X) //if point is in quad 4
                     {
-                        angle = Math.Atan((destination.Y - current.Y) / (destination.X - current.X));
-                        angle = -1 * (180 - angle);
+                        angle = -1 * Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
+                        angle *= rTD;
                     }
                 }
             }
-
             /*
                 by this point we have an angle as if the robot was pointed up the y axis. Now let's
                 correct for the robot's current heading so we don't overturn
@@ -107,11 +107,11 @@ namespace AutonGUI
             angle = angle - currentHeading;
             if (angle > 180)
             {
-                angle = -1 * (angle - 180);
+                angle = -1 * (180 + currentHeading + 90 + (90-(angle + currentHeading)));
             }
             else if (angle < -180)
             {
-                angle = -1 * (angle + 180);
+                angle = 180 + currentHeading + 90 + (90 - (angle + currentHeading));
             }
 
             /*
@@ -213,7 +213,7 @@ namespace AutonGUI
             string source = File.ReadAllText(SourceFileTextBox.Text);
             string[] split = source.Split("[GUIMARKER]");
             string commands = "";
-            Tuple<double, double> currentPos = new Tuple<double,double>(0,0); //inches X,Y
+            Point currentPos = new Point(); //gridUnits X,Y
             double heading = 0; //degrees -180 -> 180 range
             foreach (Node n in moveOrder)
             {                  //turning it into feet * 12in         getting inches leftover from feet
@@ -221,18 +221,45 @@ namespace AutonGUI
                 int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
 
                 /*
+                 commands:
+
+                chassis->moveDistance([distance]);
+                chassis->turnAngle([angle]);
+                 */
+
+                Point destination = new Point(n.coordinate.X, n.coordinate.Y);
+                double distance = PointDistance(currentPos,destination); //in grid units
+                double angle = GetNextAngle(currentPos, destination,heading,n.reverse); //in deg
+                if(n.reverse)
+                {
+                    distance = -1 * distance;
+                }
+
+                if(angle != 0)
+                {
+                    commands += $"\t\tchassis->turnAngle({angle});\n";
+                }
+                if(distance != 0)
+                {
+                    commands += $"\t\tchassis->moveDistance({distance/100*12});\n";
+                }
+
+                /*
                 if (!n.offset)
                     commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()});\n";
                 else
                     commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()}, 7_in);\n";
                 */
+                /*
                 if (n.deg != 0)
                     commands += $"\t\tchassis->turnToAngle({n.deg}_deg);\n";
+                */
                 if (n.intakeVelocity != 0)
                     commands += $"\t\tintake.moveVelocity({n.intakeVelocity});\n";
                 if (n.delay != 0)
                     commands += $"\t\tpros::delay({n.delay});\n";
-
+                currentPos = destination;
+                heading = heading + angle;
             }
             File.WriteAllText(SaveLocation.Text, split[0] + commands + split[1]);
         }

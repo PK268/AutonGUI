@@ -75,13 +75,17 @@
             // 
             // SaveButton
             // 
+            SaveButton.BackColor = Color.DimGray;
+            SaveButton.FlatAppearance.BorderColor = Color.Black;
+            SaveButton.FlatAppearance.BorderSize = 0;
+            SaveButton.ForeColor = Color.White;
             SaveButton.Location = new Point(583, 21);
             SaveButton.Margin = new Padding(3, 2, 3, 2);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(82, 22);
             SaveButton.TabIndex = 1;
             SaveButton.Text = "Save";
-            SaveButton.UseVisualStyleBackColor = true;
+            SaveButton.UseVisualStyleBackColor = false;
             SaveButton.Click += SaveButton_Click;
             // 
             // SaveLocation
@@ -103,20 +107,22 @@
             // label1
             // 
             label1.AutoSize = true;
+            label1.ForeColor = Color.White;
             label1.Location = new Point(697, 52);
             label1.Name = "label1";
-            label1.Size = new Size(48, 15);
+            label1.Size = new Size(67, 15);
             label1.TabIndex = 4;
-            label1.Text = "dest file";
+            label1.Text = "Destination";
             // 
             // label2
             // 
             label2.AutoSize = true;
+            label2.ForeColor = Color.White;
             label2.Location = new Point(697, 84);
             label2.Name = "label2";
-            label2.Size = new Size(61, 15);
+            label2.Size = new Size(43, 15);
             label2.TabIndex = 5;
-            label2.Text = "source file";
+            label2.Text = "Source";
             // 
             // IntakeVelocityTextBox
             // 
@@ -129,6 +135,7 @@
             // label3
             // 
             label3.AutoSize = true;
+            label3.ForeColor = Color.White;
             label3.Location = new Point(692, 181);
             label3.Name = "label3";
             label3.Size = new Size(129, 15);
@@ -137,17 +144,23 @@
             // 
             // UpdateNodeButton
             // 
+            UpdateNodeButton.BackColor = Color.DimGray;
+            UpdateNodeButton.FlatAppearance.BorderColor = Color.Black;
+            UpdateNodeButton.FlatAppearance.BorderSize = 0;
+            UpdateNodeButton.ForeColor = Color.White;
             UpdateNodeButton.Location = new Point(578, 126);
             UpdateNodeButton.Margin = new Padding(3, 2, 3, 2);
             UpdateNodeButton.Name = "UpdateNodeButton";
             UpdateNodeButton.Size = new Size(109, 22);
             UpdateNodeButton.TabIndex = 8;
             UpdateNodeButton.Text = "Update Node";
-            UpdateNodeButton.UseVisualStyleBackColor = true;
+            UpdateNodeButton.UseVisualStyleBackColor = false;
             UpdateNodeButton.Click += UpdateNodeButton_Click;
             // 
             // Nodes
             // 
+            Nodes.BackColor = Color.White;
+            Nodes.ForeColor = Color.Black;
             Nodes.FormattingEnabled = true;
             Nodes.ItemHeight = 15;
             Nodes.Location = new Point(578, 330);
@@ -177,6 +190,7 @@
             // label4
             // 
             label4.AutoSize = true;
+            label4.ForeColor = Color.White;
             label4.Location = new Point(593, 302);
             label4.Name = "label4";
             label4.Size = new Size(14, 15);
@@ -186,6 +200,7 @@
             // label5
             // 
             label5.AutoSize = true;
+            label5.ForeColor = Color.White;
             label5.Location = new Point(683, 302);
             label5.Name = "label5";
             label5.Size = new Size(14, 15);
@@ -195,12 +210,13 @@
             // label6
             // 
             label6.AutoSize = true;
+            label6.ForeColor = Color.White;
             label6.Location = new Point(692, 152);
             label6.Name = "label6";
             label6.RightToLeft = RightToLeft.No;
-            label6.Size = new Size(89, 15);
+            label6.Size = new Size(79, 15);
             label6.TabIndex = 19;
-            label6.Text = "Deg rotate after";
+            label6.Text = "Deg to Rotate";
             // 
             // DegRotateTextBox
             // 
@@ -213,6 +229,7 @@
             // ReverseButton
             // 
             ReverseButton.AutoSize = true;
+            ReverseButton.ForeColor = Color.White;
             ReverseButton.Location = new Point(587, 247);
             ReverseButton.Name = "ReverseButton";
             ReverseButton.Size = new Size(106, 19);
@@ -223,6 +240,8 @@
             // CenterIntakeButton
             // 
             CenterIntakeButton.AutoSize = true;
+            CenterIntakeButton.Enabled = false;
+            CenterIntakeButton.ForeColor = Color.White;
             CenterIntakeButton.Location = new Point(587, 272);
             CenterIntakeButton.Name = "CenterIntakeButton";
             CenterIntakeButton.Size = new Size(137, 19);
@@ -240,55 +259,72 @@
             // 
             // DestFileButton
             // 
+            DestFileButton.BackColor = Color.DimGray;
+            DestFileButton.FlatAppearance.BorderColor = Color.Black;
+            DestFileButton.FlatAppearance.BorderSize = 0;
+            DestFileButton.ForeColor = Color.White;
             DestFileButton.Location = new Point(764, 47);
             DestFileButton.Name = "DestFileButton";
             DestFileButton.Size = new Size(75, 23);
             DestFileButton.TabIndex = 22;
             DestFileButton.Text = "Open";
-            DestFileButton.UseVisualStyleBackColor = true;
+            DestFileButton.UseVisualStyleBackColor = false;
             DestFileButton.Click += DestFileButton_Click;
             // 
             // SourceFileButton
             // 
+            SourceFileButton.BackColor = Color.DimGray;
+            SourceFileButton.FlatAppearance.BorderColor = Color.Black;
+            SourceFileButton.FlatAppearance.BorderSize = 0;
+            SourceFileButton.ForeColor = Color.White;
             SourceFileButton.Location = new Point(764, 79);
             SourceFileButton.Name = "SourceFileButton";
             SourceFileButton.Size = new Size(75, 23);
             SourceFileButton.TabIndex = 23;
             SourceFileButton.Text = "Open";
-            SourceFileButton.UseVisualStyleBackColor = true;
+            SourceFileButton.UseVisualStyleBackColor = false;
             SourceFileButton.Click += SourceFileButton_Click;
             // 
             // SaveJsonButton
             // 
+            SaveJsonButton.BackColor = Color.DimGray;
+            SaveJsonButton.FlatAppearance.BorderColor = Color.Black;
+            SaveJsonButton.FlatAppearance.BorderSize = 0;
+            SaveJsonButton.ForeColor = Color.White;
             SaveJsonButton.Location = new Point(683, 20);
             SaveJsonButton.Margin = new Padding(3, 2, 3, 2);
             SaveJsonButton.Name = "SaveJsonButton";
             SaveJsonButton.Size = new Size(82, 22);
             SaveJsonButton.TabIndex = 24;
             SaveJsonButton.Text = "Save Json";
-            SaveJsonButton.UseVisualStyleBackColor = true;
+            SaveJsonButton.UseVisualStyleBackColor = false;
             SaveJsonButton.Click += SaveJsonButton_Click;
             // 
             // LoadJsonButton
             // 
+            LoadJsonButton.BackColor = Color.DimGray;
+            LoadJsonButton.FlatAppearance.BorderColor = Color.Black;
+            LoadJsonButton.FlatAppearance.BorderSize = 0;
+            LoadJsonButton.ForeColor = Color.White;
             LoadJsonButton.Location = new Point(764, 20);
             LoadJsonButton.Margin = new Padding(3, 2, 3, 2);
             LoadJsonButton.Name = "LoadJsonButton";
             LoadJsonButton.Size = new Size(82, 22);
             LoadJsonButton.TabIndex = 25;
             LoadJsonButton.Text = "Load Json";
-            LoadJsonButton.UseVisualStyleBackColor = true;
+            LoadJsonButton.UseVisualStyleBackColor = false;
             LoadJsonButton.Click += LoadJsonButton_Click;
             // 
             // label7
             // 
             label7.AutoSize = true;
+            label7.ForeColor = Color.White;
             label7.Location = new Point(692, 212);
             label7.Name = "label7";
             label7.RightToLeft = RightToLeft.No;
-            label7.Size = new Size(63, 15);
+            label7.Size = new Size(65, 15);
             label7.TabIndex = 27;
-            label7.Text = "Delay after";
+            label7.Text = "Delay After";
             // 
             // DelayTextBox
             // 
@@ -300,18 +336,23 @@
             // 
             // DeleteButton
             // 
+            DeleteButton.BackColor = Color.DimGray;
+            DeleteButton.FlatAppearance.BorderColor = Color.Black;
+            DeleteButton.FlatAppearance.BorderSize = 0;
+            DeleteButton.ForeColor = Color.White;
             DeleteButton.Location = new Point(771, 300);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 28;
             DeleteButton.Text = "Delete";
-            DeleteButton.UseVisualStyleBackColor = true;
+            DeleteButton.UseVisualStyleBackColor = false;
             DeleteButton.Click += DeleteButton_Click;
             // 
-            // Form1
+            // AutonGUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.DimGray;
             ClientSize = new Size(856, 560);
             Controls.Add(DeleteButton);
             Controls.Add(label7);
@@ -338,9 +379,10 @@
             Controls.Add(SaveLocation);
             Controls.Add(SaveButton);
             Controls.Add(OverUnderBG);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 2, 3, 2);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "AutonGUI";
+            Text = "34690A Auton GUI";
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).EndInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).EndInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).EndInit();

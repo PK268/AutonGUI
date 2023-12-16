@@ -25,14 +25,14 @@ namespace AutonGUI
             public int delay;
             public Node()
             {
-                reverse = true;
+                reverse = false;
                 intakeVelocity = 0;
                 deg = 0;
                 delay = 0;
             }
             public Node(int index, Point coordinate, bool offset, int intakeVelocity)
             {
-                reverse = true;
+                reverse = false;
                 this.offset = offset;
                 this.index = index;
                 this.coordinate = coordinate;
@@ -107,7 +107,7 @@ namespace AutonGUI
             angle = angle - currentHeading;
             if (angle > 180)
             {
-                angle = -1 * (180 + currentHeading + 90 + (90-(angle + currentHeading)));
+                angle = -1 * (180 + currentHeading + 90 + (90 - (angle + currentHeading)));
             }
             else if (angle < -180)
             {
@@ -228,20 +228,20 @@ namespace AutonGUI
                  */
 
                 Point destination = new Point(n.coordinate.X, n.coordinate.Y);
-                double distance = PointDistance(currentPos,destination); //in grid units
-                double angle = GetNextAngle(currentPos, destination,heading,n.reverse); //in deg
-                if(n.reverse)
+                double distance = PointDistance(currentPos, destination); //in grid units
+                double angle = GetNextAngle(currentPos, destination, heading, n.reverse); //in deg
+                if (n.reverse)
                 {
                     distance = -1 * distance;
                 }
 
-                if(angle != 0)
+                if (angle != 0)
                 {
                     commands += $"\t\tchassis->turnAngle({angle});\n";
                 }
-                if(distance != 0)
+                if (distance != 0)
                 {
-                    commands += $"\t\tchassis->moveDistance({distance/100*12});\n";
+                    commands += $"\t\tchassis->moveDistance({distance / 100 * 12});\n";
                 }
 
                 /*

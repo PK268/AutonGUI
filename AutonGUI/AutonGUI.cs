@@ -143,6 +143,17 @@ namespace AutonGUI
             return Math.Sqrt(Math.Pow(destination.Y - current.Y, 2) + Math.Pow(destination.X - current.X, 2));
         }
 
+        private void CreateNode(Point location)
+        {
+            var button = new Button();
+            Controls.Add(button);
+            button.Location = location;
+            button.BringToFront();
+            button.Size = new Size(30, 30);
+            button.Text = "" + steps;
+            button.Name = "" + steps;
+            button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
+        }
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
@@ -160,18 +171,8 @@ namespace AutonGUI
                     newNodePos.Offset(0, -559); //-559 to make 0,0 the bottom left instead of the top left.
                     newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
                     moveOrder.Add(new Node(steps, new Point((int)((newNodePos.X) * resizeX) - zero.X, (int)((newNodePos.Y) * resizeY) - zero.Y), false, 0));
-
-                    var button = new Button();
-                    Controls.Add(button);
-                    button.Location = PointToClient(new Point(globalMousePos.X - 15, globalMousePos.Y - 15));
-                    button.BringToFront();
-                    button.Size = new Size(30, 30);
-                    button.Text = "" + steps;
-                    button.Name = "" + steps;
-                    button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
-
+                    CreateNode(PointToClient(new Point(globalMousePos.X - 15, globalMousePos.Y - 15)));
                     Nodes.Items.Add($"{"" + steps} {new Point((int)(newNodePos.X * resizeX) - zero.X, (int)(newNodePos.Y * resizeY) - zero.Y)}");
-
                     steps++;
                     // Right click
                     break;
@@ -182,18 +183,8 @@ namespace AutonGUI
         private void SimulateRightClick(Node n)
         {
             Point newNodePos = new Point((int)(((n.coordinate.X) + zero.X) / resizeX) - 15, Math.Abs(559 - (int)((n.coordinate.Y + zero.Y) / resizeY)) - 15);
-
-            var button = new Button();
-            Controls.Add(button);
-            button.Location = newNodePos;
-            button.BringToFront();
-            button.Size = new Size(30, 30);
-            button.Text = "" + steps;
-            button.Name = "" + steps;
-            button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
-
+            CreateNode(newNodePos);
             Nodes.Items.Add($"{"" + steps} {new Point(n.coordinate.X, n.coordinate.Y)}");
-
             steps++;
         }
         public void ShowStepInfo(int index)

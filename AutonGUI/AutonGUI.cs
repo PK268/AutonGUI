@@ -64,17 +64,6 @@ namespace AutonGUI
         public AutonGUI()
         {
             InitializeComponent();
-            setText();
-        }
-        public async Task setText()
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response =  await client.GetAsync("https://img.shields.io/github/v/tag/PK268/AutonGUI.svg?sort=semver");
-            var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            responseBody = responseBody.Split("tag: ")[1];
-            responseBody = responseBody.Split("\"")[0];
-            Text += responseBody;
-
         }
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {

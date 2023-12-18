@@ -18,13 +18,13 @@ namespace AutonGUI
         static int lastSelectedStep = 0;
         public class Node
         {
-            public int index;
-            public Point coordinate;
-            public bool offset;
-            public int intakeVelocity;
-            public bool reverse;
-            public int deg;
-            public int delay;
+            public int index { get; set; }
+            public Point coordinate { get; set; }
+            public bool offset { get; set; }
+            public int intakeVelocity { get; set; }
+            public bool reverse { get; set; }
+            public int deg { get; set; }
+            public int delay {  get;  set; }
             public Node()
             {
                 reverse = false;

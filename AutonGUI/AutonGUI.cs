@@ -16,6 +16,23 @@ namespace AutonGUI
         const double resizeY = 2.14669051878;
         static int steps = 0;
         static int lastSelectedStep = 0;
+        public class SaveData
+        {
+            public Point SpawnPoint { get; set; }
+            public double SpawnAngle { get; set; }
+            public string DestFile { get; set; }
+            public string SourceFile { get; set; }
+            public List<Node> MoveOrder { get; set; }
+
+            public SaveData(Point spawnPoint,string destFile, string sourceFile, List<Node> moveOrder, double spawnAngle)
+            {
+                SpawnPoint = spawnPoint;
+                DestFile = destFile;
+                SourceFile = sourceFile;
+                MoveOrder = moveOrder;
+                SpawnAngle = spawnAngle;
+            }
+        }
         public class Node
         {
             public int index { get; set; }
@@ -47,6 +64,17 @@ namespace AutonGUI
         public AutonGUI()
         {
             InitializeComponent();
+            setText();
+        }
+        public async Task setText()
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response =  await client.GetAsync("https://img.shields.io/github/v/tag/PK268/AutonGUI.svg?sort=semver");
+            var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            responseBody = responseBody.Split("tag: ")[1];
+            responseBody = responseBody.Split("\"")[0];
+            Text += responseBody;
+
         }
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
@@ -142,7 +170,6 @@ namespace AutonGUI
         {
             return Math.Sqrt(Math.Pow(destination.Y - current.Y, 2) + Math.Pow(destination.X - current.X, 2));
         }
-
         private void CreateNode(Point location)
         {
             var button = new Button();
@@ -217,7 +244,6 @@ namespace AutonGUI
             file.Close();
             string source = File.ReadAllText(SourceFileTextBox.Text);
             string[] split = source.Split("[GUIMARKER]");
-            string commands = "";
             StringBuilder stringBuilder = new StringBuilder();
             Point currentPos = new Point(); //gridUnits X,Y
             double heading = zeroAngle; //degrees -180 -> 180 range
@@ -244,11 +270,11 @@ namespace AutonGUI
                 //Replacement for angle != 0 according to codacy, comapring floating point can cause errors
                 if (angle < -0.01 || angle > 0.01)
                 {
-                    stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);\n");
+                    stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);");
                 }
                 if (distance < -0.01 || distance > 0.01)
                 {
-                    stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);\n");
+                    stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);");
                 }
 
                 /*
@@ -263,16 +289,16 @@ namespace AutonGUI
                 */
                 if (n.intakeVelocity != 0)
                 {
-                    stringBuilder.AppendLine($"\t\tintake.moveVelocity({n.intakeVelocity});\n");
+                    stringBuilder.AppendLine($"\t\tintake.moveVelocity({n.intakeVelocity});");
                 }
                 if (n.delay != 0)
                 {
-                    stringBuilder.AppendLine($"\t\tpros::delay({n.delay});\n");
+                    stringBuilder.AppendLine($"\t\tpros::delay({n.delay});");
                 }
                 currentPos = destination;
                 heading = heading + angle;
             }
-            File.WriteAllText(SaveLocation.Text, split[0] + commands + split[1]);
+            File.WriteAllText(SaveLocation.Text, split[0] + stringBuilder + split[1]);
         }
 
         private void UpdateNodeButton_Click(object sender, EventArgs e)
@@ -319,16 +345,24 @@ namespace AutonGUI
         {
             DestinationFileDialog1.ShowDialog(this);
             string endJson = DestinationFileDialog1.FileName;
-            File.WriteAllText(endJson, JsonConvert.SerializeObject(moveOrder));
+            SaveData sd = new SaveData(zero,SaveLocation.Text,SourceFileTextBox.Text,moveOrder,(double)SpawnAngleUpDown.Value);
+            File.WriteAllText(endJson, JsonConvert.SerializeObject(sd));
         }
 
         private void LoadJsonButton_Click(object sender, EventArgs e)
         {
             DestinationFileDialog1.ShowDialog(this);
             string endJson = DestinationFileDialog1.FileName;
-            List<Node> read = JsonConvert.DeserializeObject<List<Node>>(File.ReadAllText(endJson));
-            moveOrder = read;
-            foreach (Node n in read)
+            SaveData read = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(endJson));
+            moveOrder = read.MoveOrder;
+            SourceFileTextBox.Text = read.SourceFile;
+            SaveLocation.Text = read.DestFile;
+            zero = read.SpawnPoint;
+            SpawnXUpDown.Value = zero.X;
+            SpawnYUpDown.Value = zero.Y;
+            SpawnAngleUpDown.Value = (decimal)read.SpawnAngle;
+            SpawnUpdateButton_Click(null,null);
+            foreach (Node n in moveOrder)
             {
                 SimulateRightClick(n);
             }
@@ -369,7 +403,6 @@ namespace AutonGUI
                 }
             }
         }
-
 
         private void SpawnUpdateButton_Click(object sender, EventArgs e)
         {

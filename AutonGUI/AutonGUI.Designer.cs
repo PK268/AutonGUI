@@ -78,7 +78,7 @@
             // OverUnderBG
             // 
             OverUnderBG.Image = (Image)resources.GetObject("OverUnderBG.Image");
-            OverUnderBG.Location = new Point(0,0);
+            OverUnderBG.Location = new Point(0, 0);
             OverUnderBG.Margin = new Padding(3, 2, 3, 2);
             OverUnderBG.Name = "OverUnderBG";
             OverUnderBG.Size = new Size(559, 559);
@@ -514,7 +514,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 2, 3, 2);
             Name = "AutonGUI";
-            Text = "34690A Auton GUI v0.2";
+            Text = "34690A Auton GUI ";
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).EndInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).EndInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).EndInit();

@@ -24,7 +24,7 @@ namespace AutonGUI
             public string SourceFile { get; set; }
             public List<Node> MoveOrder { get; set; }
 
-            public SaveData(Point spawnPoint,string destFile, string sourceFile, List<Node> moveOrder, double spawnAngle)
+            public SaveData(Point spawnPoint, string destFile, string sourceFile, List<Node> moveOrder, double spawnAngle)
             {
                 SpawnPoint = spawnPoint;
                 DestFile = destFile;
@@ -334,7 +334,7 @@ namespace AutonGUI
         {
             DestinationFileDialog1.ShowDialog(this);
             string endJson = DestinationFileDialog1.FileName;
-            SaveData sd = new SaveData(zero,SaveLocation.Text,SourceFileTextBox.Text,moveOrder,(double)SpawnAngleUpDown.Value);
+            SaveData sd = new SaveData(zero, SaveLocation.Text, SourceFileTextBox.Text, moveOrder, (double)SpawnAngleUpDown.Value);
             File.WriteAllText(endJson, JsonConvert.SerializeObject(sd));
         }
 
@@ -350,7 +350,7 @@ namespace AutonGUI
             SpawnXUpDown.Value = zero.X;
             SpawnYUpDown.Value = zero.Y;
             SpawnAngleUpDown.Value = (decimal)read.SpawnAngle;
-            SpawnUpdateButton_Click(null,null);
+            SpawnUpdateButton_Click(null, null);
             foreach (Node n in moveOrder)
             {
                 SimulateRightClick(n);

@@ -417,8 +417,8 @@
             // SpawnAngleUpDown
             // 
             SpawnAngleUpDown.Location = new Point(772, 387);
-            SpawnAngleUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            SpawnAngleUpDown.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
+            SpawnAngleUpDown.Maximum = new decimal(new int[] { 180, 0, 0, 0 });
+            SpawnAngleUpDown.Minimum = new decimal(new int[] { 180, 0, 0, int.MinValue });
             SpawnAngleUpDown.Name = "SpawnAngleUpDown";
             SpawnAngleUpDown.Size = new Size(61, 23);
             SpawnAngleUpDown.TabIndex = 34;

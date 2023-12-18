@@ -24,7 +24,7 @@ namespace AutonGUI
             public int intakeVelocity { get; set; }
             public bool reverse { get; set; }
             public int deg { get; set; }
-            public int delay {  get;  set; }
+            public int delay { get; set; }
             public Node()
             {
                 reverse = false;
@@ -56,9 +56,13 @@ namespace AutonGUI
             if (current.X == destination.X) //if point is directly behind robot
             {
                 if (destination.Y < current.Y)
+                {
                     angle = 180;
+                }
                 else
+                {
                     angle = 0;
+                }
             }
             else if (current.Y == destination.Y) //if point is directly to the left or directly to the right of the robot
             {
@@ -124,9 +128,13 @@ namespace AutonGUI
             if (backwards)
             {
                 if (angle < 0)
+                {
                     angle += 180;
+                }
                 else if (angle > 0)
+                {
                     angle -= 180;
+                }
             }
             return angle;
         }
@@ -191,7 +199,9 @@ namespace AutonGUI
         public void ShowStepInfo(int index)
         {
             if (Nodes.Items.Count > index && (lastSelectedStep != index))
+            {
                 Nodes.SelectedIndex = index;
+            }
             for (int i = 0; i < steps; i++)
             {
                 this.Controls.Find("" + i, true).First().BackColor = Color.White;
@@ -261,9 +271,13 @@ namespace AutonGUI
                     commands += $"\t\tchassis->turnToAngle({n.deg}_deg);\n";
                 */
                 if (n.intakeVelocity != 0)
+                {
                     stringBuilder.AppendLine($"\t\tintake.moveVelocity({n.intakeVelocity});\n");
+                }
                 if (n.delay != 0)
+                {
                     stringBuilder.AppendLine($"\t\tpros::delay({n.delay});\n");
+                }
                 currentPos = destination;
                 heading = heading + angle;
             }

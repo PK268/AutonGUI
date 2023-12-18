@@ -4,6 +4,7 @@ using Newtonsoft.Json.Bson;
 using System;
 using System.CodeDom;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace AutonGUI
@@ -82,7 +83,7 @@ namespace AutonGUI
                     }
                     else if (current.X > destination.X) //if point is in quad 2
                     {
-                        angle = -1 * (Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y)));
+                        angle = (Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y)));
                         angle *= rTD;
                     }
                 }
@@ -92,11 +93,13 @@ namespace AutonGUI
                     {
                         angle = Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
                         angle *= rTD;
+                        angle -= 180;
                     }
                     else if (current.X < destination.X) //if point is in quad 4
                     {
                         angle = -1 * Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
                         angle *= rTD;
+                        angle = 180-angle;
                     }
                 }
             }
@@ -112,7 +115,7 @@ namespace AutonGUI
             }
             else if (angle < -180)
             {
-                angle = 180 + currentHeading + 90 + (90 - (angle + currentHeading));
+                angle = (180 - (currentHeading-90))  + (90 + (angle+currentHeading));
             }
 
             /*
@@ -238,11 +241,11 @@ namespace AutonGUI
 
                 if (angle != 0)
                 {
-                    commands += $"\t\tchassis->turnAngle({angle});\n";
+                    commands += $"\t\tchassis->turnAngle({angle}_deg);\n";
                 }
                 if (distance != 0)
                 {
-                    commands += $"\t\tchassis->moveDistance({distance / 100 * 12});\n";
+                    commands += $"\t\tchassis->moveDistance({distance / 100 * 12}_in);\n";
                 }
 
                 /*
@@ -360,8 +363,10 @@ namespace AutonGUI
             }
         }
 
+        
         private void SpawnUpdateButton_Click(object sender, EventArgs e)
         {
+            Point oldZero = zero;
             zero = new Point((int)SpawnXUpDown.Value, (int)SpawnYUpDown.Value);
 
             SP.Location = new Point(
@@ -369,6 +374,16 @@ namespace AutonGUI
                     Math.Abs(559 - (int)((zero.Y) / resizeY)) - 15
                     );
             zeroAngle = (double)SpawnAngleUpDown.Value;
+
+            Point difference = new Point(zero.X-oldZero.X,zero.Y-oldZero.Y);
+            for(int i = 0; i < Nodes.Items.Count; i++)
+            {
+                Nodes.Items[i] = $"{i} {{X={moveOrder[i].coordinate.X},Y={moveOrder[i].coordinate.Y}}}";
+            }
+            foreach(Node n in moveOrder)
+            {
+                n.coordinate = new Point(n.coordinate.X-difference.X + 1,n.coordinate.Y-difference.Y + 1); //Idk why its plus one but it works
+            }
         }
     }
 }

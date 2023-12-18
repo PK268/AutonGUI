@@ -5,6 +5,7 @@ using System;
 using System.CodeDom;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace AutonGUI
@@ -13,8 +14,8 @@ namespace AutonGUI
     {
         const double resizeX = 2.14669051878;
         const double resizeY = 2.14669051878;
-        static int steps;
-        static int lastSelectedStep;
+        static int steps = 0;
+        static int lastSelectedStep = 0;
         public class Node
         {
             public int index;
@@ -46,8 +47,6 @@ namespace AutonGUI
         public AutonGUI()
         {
             InitializeComponent();
-            steps = 0;
-            lastSelectedStep = 0;
         }
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
@@ -99,7 +98,7 @@ namespace AutonGUI
                     {
                         angle = -1 * Math.Atan((double)(destination.X - current.X) / (destination.Y - current.Y));
                         angle *= rTD;
-                        angle = 180-angle;
+                        angle = 180 - angle;
                     }
                 }
             }
@@ -115,7 +114,7 @@ namespace AutonGUI
             }
             else if (angle < -180)
             {
-                angle = (180 - (currentHeading-90))  + (90 + (angle+currentHeading));
+                angle = (180 - (currentHeading - 90)) + (90 + (angle + currentHeading));
             }
 
             /*
@@ -151,7 +150,6 @@ namespace AutonGUI
                     Point globalMousePos = Control.MousePosition;
                     Point newNodePos = PointToClient(globalMousePos);
                     newNodePos.Offset(0, -559); //-559 to make 0,0 the bottom left instead of the top left.
-                    newNodePos.X = newNodePos.X;
                     newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
                     moveOrder.Add(new Node(steps, new Point((int)((newNodePos.X) * resizeX) - zero.X, (int)((newNodePos.Y) * resizeY) - zero.Y), false, 0));
 
@@ -168,6 +166,8 @@ namespace AutonGUI
 
                     steps++;
                     // Right click
+                    break;
+                default:
                     break;
             }
         }
@@ -217,12 +217,13 @@ namespace AutonGUI
             string source = File.ReadAllText(SourceFileTextBox.Text);
             string[] split = source.Split("[GUIMARKER]");
             string commands = "";
+            StringBuilder stringBuilder = new StringBuilder();
             Point currentPos = new Point(); //gridUnits X,Y
             double heading = zeroAngle; //degrees -180 -> 180 range
             foreach (Node n in moveOrder)
             {                  //turning it into feet * 12in         getting inches leftover from feet
-                int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
-                int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
+                //int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
+                //int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
 
                 /*
                  commands:
@@ -239,13 +240,14 @@ namespace AutonGUI
                     distance = -1 * distance;
                 }
 
-                if (angle != 0)
+                //Replacement for angle != 0 according to codacy, comapring floating point can cause errors
+                if (angle < 0 || angle > 0)
                 {
-                    commands += $"\t\tchassis->turnAngle({angle}_deg);\n";
+                    stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);\n");
                 }
-                if (distance != 0)
+                if (distance < 0 || angle > 0)
                 {
-                    commands += $"\t\tchassis->moveDistance({distance / 100 * 12}_in);\n";
+                    stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);\n");
                 }
 
                 /*
@@ -259,9 +261,9 @@ namespace AutonGUI
                     commands += $"\t\tchassis->turnToAngle({n.deg}_deg);\n";
                 */
                 if (n.intakeVelocity != 0)
-                    commands += $"\t\tintake.moveVelocity({n.intakeVelocity});\n";
+                    stringBuilder.AppendLine($"\t\tintake.moveVelocity({n.intakeVelocity});\n");
                 if (n.delay != 0)
-                    commands += $"\t\tpros::delay({n.delay});\n";
+                    stringBuilder.AppendLine($"\t\tpros::delay({n.delay});\n");
                 currentPos = destination;
                 heading = heading + angle;
             }
@@ -363,7 +365,7 @@ namespace AutonGUI
             }
         }
 
-        
+
         private void SpawnUpdateButton_Click(object sender, EventArgs e)
         {
             Point oldZero = zero;
@@ -375,14 +377,14 @@ namespace AutonGUI
                     );
             zeroAngle = (double)SpawnAngleUpDown.Value;
 
-            Point difference = new Point(zero.X-oldZero.X,zero.Y-oldZero.Y);
-            for(int i = 0; i < Nodes.Items.Count; i++)
+            Point difference = new Point(zero.X - oldZero.X, zero.Y - oldZero.Y);
+            for (int i = 0; i < Nodes.Items.Count; i++)
             {
                 Nodes.Items[i] = $"{i} {{X={moveOrder[i].coordinate.X},Y={moveOrder[i].coordinate.Y}}}";
             }
-            foreach(Node n in moveOrder)
+            foreach (Node n in moveOrder)
             {
-                n.coordinate = new Point(n.coordinate.X-difference.X + 1,n.coordinate.Y-difference.Y + 1); //Idk why its plus one but it works
+                n.coordinate = new Point(n.coordinate.X - difference.X + 1, n.coordinate.Y - difference.Y + 1); //Idk why its plus one but it works
             }
         }
     }

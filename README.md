@@ -26,4 +26,5 @@ A visual interface for building and coding VEX OKAPI autonomous programs.
 5. If the app opens and the interface looks as it does on the photo at the top of this page, everything has been downloaded correctly and is ready for use. If not, please open an [issue](https://github.com/PK268/AutonGUI/issues).
 
 # Usage
-Please check the [wiki](https://github.com/PK268/AutonGUI/wiki) for a detailed guide on using the app.
+>[!CAUTION]
+>WIKI NOT IMPLEMENTED YET

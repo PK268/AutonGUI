@@ -241,11 +241,11 @@ namespace AutonGUI
                 }
 
                 //Replacement for angle != 0 according to codacy, comapring floating point can cause errors
-                if (angle < 0 || angle > 0)
+                if (angle < -0.01 || angle > 0.01)
                 {
                     stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);\n");
                 }
-                if (distance < 0 || angle > 0)
+                if (distance < -0.01 || distance > 0.01)
                 {
                     stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);\n");
                 }

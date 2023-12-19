@@ -321,39 +321,51 @@ namespace AutonGUI
         private void DestFileButton_Click(object sender, EventArgs e)
         {
             DestinationFileDialog1.ShowDialog(this);
-            SaveLocation.Text = DestinationFileDialog1.FileName;
+            if (DestinationFileDialog1.FileName != null && DestinationFileDialog1.FileName != "" && !DestinationFileDialog1.FileName.Equals("DestinationFileDialog1"))
+            {
+                SaveLocation.Text = DestinationFileDialog1.FileName;
+            }
         }
 
         private void SourceFileButton_Click(object sender, EventArgs e)
         {
             SourceFileDialog2.ShowDialog(this);
-            SourceFileTextBox.Text = SourceFileDialog2.FileName;
+            if (SourceFileDialog2.FileName != null && SourceFileDialog2.FileName != "" && !SourceFileDialog2.FileName.Equals("SourceFileDialog2"))
+            {
+                SourceFileTextBox.Text = SourceFileDialog2.FileName;
+            }
         }
 
         private void SaveJsonButton_Click(object sender, EventArgs e)
         {
             DestinationFileDialog1.ShowDialog(this);
-            string endJson = DestinationFileDialog1.FileName;
-            SaveData sd = new SaveData(zero, SaveLocation.Text, SourceFileTextBox.Text, moveOrder, (double)SpawnAngleUpDown.Value);
-            File.WriteAllText(endJson, JsonConvert.SerializeObject(sd));
+            if (DestinationFileDialog1.FileName != null && DestinationFileDialog1.FileName != "" && !DestinationFileDialog1.FileName.Equals("DestinationFileDialog1"))
+            {
+                string endJson = DestinationFileDialog1.FileName;
+                SaveData sd = new SaveData(zero, SaveLocation.Text, SourceFileTextBox.Text, moveOrder, (double)SpawnAngleUpDown.Value);
+                File.WriteAllText(endJson, JsonConvert.SerializeObject(sd));
+            }
         }
 
         private void LoadJsonButton_Click(object sender, EventArgs e)
         {
             DestinationFileDialog1.ShowDialog(this);
-            string endJson = DestinationFileDialog1.FileName;
-            SaveData read = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(endJson));
-            moveOrder = read.MoveOrder;
-            SourceFileTextBox.Text = read.SourceFile;
-            SaveLocation.Text = read.DestFile;
-            zero = read.SpawnPoint;
-            SpawnXUpDown.Value = zero.X;
-            SpawnYUpDown.Value = zero.Y;
-            SpawnAngleUpDown.Value = (decimal)read.SpawnAngle;
-            SpawnUpdateButton_Click(null, null);
-            foreach (Node n in moveOrder)
+            if (DestinationFileDialog1.FileName != null && DestinationFileDialog1.FileName != "" && !DestinationFileDialog1.FileName.Equals("DestinationFileDialog1"))
             {
-                SimulateRightClick(n);
+                string endJson = DestinationFileDialog1.FileName;
+                SaveData read = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(endJson));
+                moveOrder = read.MoveOrder;
+                SourceFileTextBox.Text = read.SourceFile;
+                SaveLocation.Text = read.DestFile;
+                zero = read.SpawnPoint;
+                SpawnXUpDown.Value = zero.X;
+                SpawnYUpDown.Value = zero.Y;
+                SpawnAngleUpDown.Value = (decimal)read.SpawnAngle;
+                SpawnUpdateButton_Click(null, null);
+                foreach (Node n in moveOrder)
+                {
+                    SimulateRightClick(n);
+                }
             }
         }
 

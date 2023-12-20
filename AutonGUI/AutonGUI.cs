@@ -3,10 +3,14 @@ using Newtonsoft.Json.Bson;
 
 using System;
 using System.CodeDom;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace AutonGUI
 {
@@ -61,6 +65,7 @@ namespace AutonGUI
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
         static double zeroAngle = 0;
+        static Tuple<double, double> robotSize = new Tuple<double, double>(11.6, 20); //in inches
         public AutonGUI()
         {
             InitializeComponent();
@@ -225,6 +230,72 @@ namespace AutonGUI
             DegRotateTextBox.Text = "" + traversal.deg;
             DelayTextBox.Text = "" + traversal.delay;
         }
+        
+        public double inchesToGridUnits(double inches)
+        {
+            inches = inches / 12;
+            return inches * 100;
+        }
+        //status:
+        //1=unselected
+        //2=selected
+        //3=SP
+        public Bitmap GetNodeBitmap(Tuple<double,double> robotDimentions,Point containerSize, string label,int status,double angle)
+        {
+            //Robot dimentions are in inches
+            //Container dimentions are in grid units
+            //Label is what goes on the rect
+            //Status is the color of the rect
+            Bitmap bitmap = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(bitmap);
+            Color color = new Color();
+            int resolution = 256;
+            if(status == 1)
+            {
+                color = Color.FromKnownColor(KnownColor.Gray);
+            }
+            else if (status == 2)
+            {
+                color = Color.FromKnownColor(KnownColor.Red);
+            }
+            else if (status == 3)
+            {
+                color = Color.FromKnownColor(KnownColor.DarkSlateGray);
+            }
+
+            SolidBrush brush = new SolidBrush(color);
+            int width = (int)(resolution * ((inchesToGridUnits(robotDimentions.Item1)/containerSize.X)));
+            int height = (int)(resolution * ((inchesToGridUnits(robotDimentions.Item2) / containerSize.Y)));
+
+            int offsetX = (resolution - width) / 2;
+            int offsetY = (resolution - height) / 2;
+
+            Rectangle rect = new Rectangle(offsetX,offsetY,width,height);
+            g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
+            g.RotateTransform((float)angle);
+            g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+
+            g.FillRectangle(brush, rect);
+
+
+            g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
+            g.RotateTransform(-1 * (float)angle);
+            g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+
+            //Write text
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            if (label.Length == 1)
+            {
+                g.DrawString(label, new Font("Tahoma", (int)(resolution/5.33333)), Brushes.Black, resolution / 3 + (resolution/16), resolution / 3);
+            }
+            else if (label.Length == 2)
+            {
+                g.DrawString(label, new Font("Tahoma", (int)(resolution/5.33333)), Brushes.Black, resolution / 3 - (resolution/64), resolution / 3);
+            }
+            return bitmap;
+        }
 
         //AKA the compiler
         private void SaveButton_Click(object sender, EventArgs e)
@@ -292,20 +363,24 @@ namespace AutonGUI
 
         private void UpdateNodeButton_Click(object sender, EventArgs e)
         {
-            Node traversal = moveOrder[Nodes.SelectedIndex];
-            try { traversal.intakeVelocity = int.Parse(IntakeVelocityTextBox.Text); }
-            catch { traversal.intakeVelocity = 0; ShowStepInfo(lastSelectedStep); }
+            int selectedIndex = Nodes.SelectedIndex;
+            if (selectedIndex != -1)
+            {
+                Node traversal = moveOrder[selectedIndex];
+                try { traversal.intakeVelocity = int.Parse(IntakeVelocityTextBox.Text); }
+                catch { traversal.intakeVelocity = 0; ShowStepInfo(lastSelectedStep); }
 
-            traversal.offset = CenterIntakeButton.Checked;
-            traversal.reverse = ReverseButton.Checked;
-            traversal.coordinate = new Point((int)Xcord.Value, (int)Ycord.Value);
-            Controls.Find("" + lastSelectedStep, true).First().Location = new Point((int)(((double)Xcord.Value + zero.X) / resizeX) - 15, Math.Abs((int)(((double)Ycord.Value + zero.Y) / resizeY) - 559 + 15));
-            try { traversal.deg = int.Parse(DegRotateTextBox.Text); }
-            catch { traversal.deg = 0; ShowStepInfo(lastSelectedStep); }
-            try { traversal.delay = int.Parse(DelayTextBox.Text); }
-            catch { traversal.delay = 0; ShowStepInfo(lastSelectedStep); }
+                traversal.offset = CenterIntakeButton.Checked;
+                traversal.reverse = ReverseButton.Checked;
+                traversal.coordinate = new Point((int)Xcord.Value, (int)Ycord.Value);
+                Controls.Find("" + lastSelectedStep, true).First().Location = new Point((int)(((double)Xcord.Value + zero.X) / resizeX) - 15, Math.Abs((int)(((double)Ycord.Value + zero.Y) / resizeY) - 559 + 15));
+                try { traversal.deg = int.Parse(DegRotateTextBox.Text); }
+                catch { traversal.deg = 0; ShowStepInfo(lastSelectedStep); }
+                try { traversal.delay = int.Parse(DelayTextBox.Text); }
+                catch { traversal.delay = 0; ShowStepInfo(lastSelectedStep); }
 
-            Nodes.Items[lastSelectedStep] = lastSelectedStep + " " + new Point(traversal.coordinate.X, traversal.coordinate.Y);
+                Nodes.Items[lastSelectedStep] = lastSelectedStep + " " + new Point(traversal.coordinate.X, traversal.coordinate.Y);
+            }
         }
 
         private void Nodes_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -425,6 +500,12 @@ namespace AutonGUI
             {
                 n.coordinate = new Point(n.coordinate.X - difference.X + 1, n.coordinate.Y - difference.Y + 1); //Idk why its plus one but it works
             }
+        }
+
+        private void OpenCodeSettingsButton_Click(object sender, EventArgs e)
+        {
+            CodeSettings codeSettings = new CodeSettings();
+            codeSettings.Show();
         }
     }
 }

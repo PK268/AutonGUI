@@ -66,6 +66,7 @@
             AngleReferencePictureBox = new PictureBox();
             SP = new Button();
             SpawnUpdateButton = new Button();
+            OpenCodeSettingsButton = new Button();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).BeginInit();
@@ -470,12 +471,25 @@
             SpawnUpdateButton.UseVisualStyleBackColor = false;
             SpawnUpdateButton.Click += SpawnUpdateButton_Click;
             // 
+            // OpenCodeSettingsButton
+            // 
+            OpenCodeSettingsButton.BackColor = Color.DimGray;
+            OpenCodeSettingsButton.ForeColor = Color.White;
+            OpenCodeSettingsButton.Location = new Point(697, 108);
+            OpenCodeSettingsButton.Name = "OpenCodeSettingsButton";
+            OpenCodeSettingsButton.Size = new Size(142, 40);
+            OpenCodeSettingsButton.TabIndex = 39;
+            OpenCodeSettingsButton.Text = "Open code settings";
+            OpenCodeSettingsButton.UseVisualStyleBackColor = false;
+            OpenCodeSettingsButton.Click += OpenCodeSettingsButton_Click;
+            // 
             // AutonGUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
             ClientSize = new Size(856, 560);
+            Controls.Add(OpenCodeSettingsButton);
             Controls.Add(SpawnUpdateButton);
             Controls.Add(SP);
             Controls.Add(AngleReferencePictureBox);
@@ -565,5 +579,6 @@
         private PictureBox AngleReferencePictureBox;
         private Button SP;
         private Button SpawnUpdateButton;
+        private Button OpenCodeSettingsButton;
     }
 }

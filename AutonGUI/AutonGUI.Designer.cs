@@ -64,7 +64,6 @@
             SpawnAngleUpDown = new NumericUpDown();
             SpawnAngle = new Label();
             AngleReferencePictureBox = new PictureBox();
-            SP = new Button();
             SpawnUpdateButton = new Button();
             OpenCodeSettingsButton = new Button();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
@@ -446,16 +445,6 @@
             AngleReferencePictureBox.TabIndex = 36;
             AngleReferencePictureBox.TabStop = false;
             // 
-            // SP
-            // 
-            SP.BackColor = Color.DarkSlateGray;
-            SP.Location = new Point(124, 497);
-            SP.Name = "SP";
-            SP.Size = new Size(30, 30);
-            SP.TabIndex = 37;
-            SP.Text = "SP";
-            SP.UseVisualStyleBackColor = false;
-            // 
             // SpawnUpdateButton
             // 
             SpawnUpdateButton.BackColor = Color.DarkSlateGray;
@@ -479,7 +468,7 @@
             OpenCodeSettingsButton.Name = "OpenCodeSettingsButton";
             OpenCodeSettingsButton.Size = new Size(142, 40);
             OpenCodeSettingsButton.TabIndex = 39;
-            OpenCodeSettingsButton.Text = "Open code settings";
+            OpenCodeSettingsButton.Text = "Open CodeGen Settings";
             OpenCodeSettingsButton.UseVisualStyleBackColor = false;
             OpenCodeSettingsButton.Click += OpenCodeSettingsButton_Click;
             // 
@@ -491,7 +480,6 @@
             ClientSize = new Size(856, 560);
             Controls.Add(OpenCodeSettingsButton);
             Controls.Add(SpawnUpdateButton);
-            Controls.Add(SP);
             Controls.Add(AngleReferencePictureBox);
             Controls.Add(SpawnAngle);
             Controls.Add(SpawnAngleUpDown);
@@ -577,7 +565,6 @@
         private NumericUpDown SpawnAngleUpDown;
         private Label SpawnAngle;
         private PictureBox AngleReferencePictureBox;
-        private Button SP;
         private Button SpawnUpdateButton;
         private Button OpenCodeSettingsButton;
     }

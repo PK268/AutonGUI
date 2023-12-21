@@ -6,10 +6,13 @@ using System.CodeDom;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace AutonGUI
@@ -19,7 +22,7 @@ namespace AutonGUI
         const double resizeX = 2.14669051878;
         const double resizeY = 2.14669051878;
         static int steps = 0;
-        static int lastSelectedStep = 0;
+        static int lastSelectedStep = -1;
         public class SaveData
         {
             public Point SpawnPoint { get; set; }
@@ -62,13 +65,21 @@ namespace AutonGUI
                 this.intakeVelocity = intakeVelocity;
             }
         }
+        static PictureBox head;
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
         static double zeroAngle = 0;
-        static Tuple<double, double> robotSize = new Tuple<double, double>(11.6, 20); //in inches
+        static Tuple<double, double> robotSize = new Tuple<double, double>(12.8, 15.5); //in inches
         public AutonGUI()
         {
             InitializeComponent();
+            var SP = new PictureBox();
+            OverUnderBG.Controls.Add(SP);
+            SP.Name = "SP";
+            SP.SizeMode = PictureBoxSizeMode.Zoom;
+            SP.BringToFront();
+            RefreshNodeImage(true, Point.Empty, "SP", zeroAngle, 3);
+            head = SP;
         }
         double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
@@ -164,17 +175,6 @@ namespace AutonGUI
         {
             return Math.Sqrt(Math.Pow(destination.Y - current.Y, 2) + Math.Pow(destination.X - current.X, 2));
         }
-        private void CreateNode(Point location)
-        {
-            var button = new Button();
-            Controls.Add(button);
-            button.Location = location;
-            button.BringToFront();
-            button.Size = new Size(30, 30);
-            button.Text = "" + steps;
-            button.Name = "" + steps;
-            button.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
-        }
         private void OverUnderBG_Click(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;
@@ -189,17 +189,29 @@ namespace AutonGUI
 
                     Point globalMousePos = Control.MousePosition;
                     Point newNodePos = PointToClient(globalMousePos);
-                    newNodePos.Offset(0, -559); //-559 to make 0,0 the bottom left instead of the top left.
                     newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
-                    moveOrder.Add(new Node(steps, new Point((int)((newNodePos.X) * resizeX) - zero.X, (int)((newNodePos.Y) * resizeY) - zero.Y), false, 0));
-                    CreateNode(PointToClient(new Point(globalMousePos.X - 15, globalMousePos.Y - 15)));
-                    Nodes.Items.Add($"{"" + steps} {new Point((int)(newNodePos.X * resizeX) - zero.X, (int)(newNodePos.Y * resizeY) - zero.Y)}");
+                    Point coordiante = new Point((int)(newNodePos.X * resizeX - zero.X), (int)(newNodePos.Y * resizeY - zero.Y));
+                    moveOrder.Add(new Node(steps, coordiante, false, 0));
+                    CreateNode(coordiante);
+                    Nodes.Items.Add($"{"" + steps} {coordiante}");
                     steps++;
                     // Right click
                     break;
                 default:
                     break;
             }
+        }
+        private void CreateNode(Point location)
+        {
+            var nodeToAdd = new PictureBox();
+            OverUnderBG.Controls.Add(nodeToAdd);
+            nodeToAdd.SizeMode = PictureBoxSizeMode.Zoom;
+            nodeToAdd.BringToFront();
+            nodeToAdd.Name = "" + steps;
+            nodeToAdd.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
+            RefreshNodeImage(false, location, "" + steps, 0, 1);
+            //UpdateAllNodeImages();
+            head = nodeToAdd;
         }
         private void SimulateRightClick(Node n)
         {
@@ -216,10 +228,11 @@ namespace AutonGUI
             }
             for (int i = 0; i < steps; i++)
             {
-                this.Controls.Find("" + i, true).First().BackColor = Color.White;
+                RefreshNodeImage(false, moveOrder[i].coordinate, "" + i, 0, 1);
             }
-            Control indexButton = this.Controls.Find("" + index, true).First();
-            indexButton.BackColor = Color.Red;
+            Control indexNode = this.Controls.Find("" + index, true).First();
+            indexNode.BackColor = Color.Red;
+            RefreshNodeImage(false, moveOrder[index].coordinate, "" + index, 0, 2);
             lastSelectedStep = index;
             Node traversal = moveOrder[index];
             IntakeVelocityTextBox.Text = "" + traversal.intakeVelocity;
@@ -230,27 +243,89 @@ namespace AutonGUI
             DegRotateTextBox.Text = "" + traversal.deg;
             DelayTextBox.Text = "" + traversal.delay;
         }
-        
-        public double inchesToGridUnits(double inches)
+        public double InchesToGridUnits(double inches)
         {
-            inches = inches / 12;
-            return inches * 100;
+            return inches / 12 * 100;
+        }
+        public Point GridToLocation(Point coordinate)
+        {
+            double x = (coordinate.X + zero.X) / resizeX;
+            double y = (coordinate.Y + zero.Y) / resizeY;
+            return new Point((int)x, (int)y);
+        }
+        public Point GridToLocation(Point coordinate, Point nodeSize)
+        {
+            double x = (coordinate.X + zero.X) / resizeX;
+            double y = (coordinate.Y + zero.Y) / resizeY;
+            x = x - ((double)nodeSize.X / 2);
+            y = y - ((double)nodeSize.Y / 2);
+            return new Point((int)x, (int)y);
+        }
+        public void UpdateAllNodeImages()
+        {
+            Point currentPos = new Point(); //gridUnits X,Y
+            double heading = zeroAngle;
+            for (int i = 0; i < moveOrder.Count; i++)
+            {
+                Control c = Controls.Find("" + i, true)[0];
+                Node n = moveOrder[i];
+                Point destination = new Point(n.coordinate.X, n.coordinate.Y); //in grid units
+                double angle = GetNextAngle(currentPos, destination, heading, n.reverse);
+                int status = 1;
+                if (lastSelectedStep == i)
+                {
+                    status = 2;
+                }
+                RefreshNodeImage(false, new Point((int)(((n.coordinate.X + (c.Size.Width / 2)) + zero.X) / resizeX) - (c.Size.Width / 2), Math.Abs(559 - (int)((n.coordinate.Y + zero.Y - (c.Size.Height / 2)) / resizeY)) - (c.Size.Height / 2)), "" + i, angle, status);
+                currentPos = destination;
+                heading = heading + angle;
+            }
+        }
+        public void RefreshNodeImage(bool spawn, Point location, string label, double angle, int status)
+        {
+            var NodeToUpdate = (PictureBox)(Controls.Find(label, true)[0]);
+            Point NodeSize = GetNodeSize(robotSize, angle); //d
+            NodeToUpdate.Size = new Size(NodeSize);
+            Point newNodePos;
+            if (spawn)
+            {
+
+                newNodePos = new Point((int)((zero.X) / resizeX) - (NodeSize.X / 2), Math.Abs(OverUnderBG.Size.Height - (int)((zero.Y) / resizeY)) - (NodeSize.Y / 2));
+            }
+            else
+            {
+                newNodePos = GridToLocation(location, NodeSize);
+            }
+            NodeToUpdate.Location = newNodePos;
+            NodeToUpdate.Image = GetNodeBitmap(robotSize, NodeSize, label, status, angle);
+            NodeToUpdate.BackColor = Color.Transparent;
         }
         //status:
         //1=unselected
         //2=selected
         //3=SP
-        public Bitmap GetNodeBitmap(Tuple<double,double> robotDimentions,Point containerSize, string label,int status,double angle)
+        public Bitmap GetNodeBitmap(Tuple<double, double> robotDimentions, Point containerSize, string label, int status, double angle)
         {
             //Robot dimentions are in inches
             //Container dimentions are in grid units
             //Label is what goes on the rect
             //Status is the color of the rect
-            Bitmap bitmap = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(bitmap);
+
+
             Color color = new Color();
-            int resolution = 256;
-            if(status == 1)
+            int resolutionX = 256;
+            int resolutionY = 256;
+            if (containerSize.Y / containerSize.X < 0)
+            {
+                resolutionX /= (1 / ((containerSize.Y / containerSize.X)));
+            }
+            else
+            {
+                resolutionX = (int)(256 * ((double)containerSize.X / containerSize.Y));
+            }
+            Bitmap bitmap = new Bitmap(resolutionX, resolutionY, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(bitmap);
+            if (status == 1)
             {
                 color = Color.FromKnownColor(KnownColor.Gray);
             }
@@ -262,25 +337,29 @@ namespace AutonGUI
             {
                 color = Color.FromKnownColor(KnownColor.DarkSlateGray);
             }
-
             SolidBrush brush = new SolidBrush(color);
-            int width = (int)(resolution * ((inchesToGridUnits(robotDimentions.Item1)/containerSize.X)));
-            int height = (int)(resolution * ((inchesToGridUnits(robotDimentions.Item2) / containerSize.Y)));
+            int width = (int)(resolutionX * ((InchesToGridUnits(robotDimentions.Item1) / (containerSize.X * resizeX))));
+            int height = (int)(resolutionY * ((InchesToGridUnits(robotDimentions.Item2) / (containerSize.Y * resizeY))));
 
-            int offsetX = (resolution - width) / 2;
-            int offsetY = (resolution - height) / 2;
+            int offsetX = (resolutionX - width) / 2;
+            int offsetY = (resolutionY - height) / 2;
 
-            Rectangle rect = new Rectangle(offsetX,offsetY,width,height);
-            g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
-            g.RotateTransform((float)angle);
-            g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+            Rectangle rect = new Rectangle(offsetX, offsetY, width, height);
+            if (angle != 0)
+            {
+                g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
+                g.RotateTransform((float)angle);
+                g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+            }
 
             g.FillRectangle(brush, rect);
 
-
-            g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
-            g.RotateTransform(-1 * (float)angle);
-            g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+            if (angle != 0)
+            {
+                g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
+                g.RotateTransform(-1 * (float)angle);
+                g.TranslateTransform(-(float)bitmap.Width / 2, -(float)bitmap.Height / 2);
+            }
 
             //Write text
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -288,15 +367,24 @@ namespace AutonGUI
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             if (label.Length == 1)
             {
-                g.DrawString(label, new Font("Tahoma", (int)(resolution/5.33333)), Brushes.Black, resolution / 3 + (resolution/16), resolution / 3);
+                g.DrawString(label, new Font("Tahoma", (int)(Math.Min(resolutionX, resolutionY) / 5.33333)), Brushes.Black, resolutionX / 3 + (resolutionX / 16), resolutionY / 3);
             }
             else if (label.Length == 2)
             {
-                g.DrawString(label, new Font("Tahoma", (int)(resolution/5.33333)), Brushes.Black, resolution / 3 - (resolution/64), resolution / 3);
+                g.DrawString(label, new Font("Tahoma", (int)(Math.Min(resolutionX, resolutionY) / 5.33333)), Brushes.Black, resolutionX / 3 - (resolutionX / 64), resolutionY / 3);
             }
             return bitmap;
         }
-
+        public Point GetNodeSize(Tuple<double, double> robotDimentions, double angle)
+        {
+            double x = (robotDimentions.Item1 * Math.Cos(angle * (Math.PI / 180))) + (robotDimentions.Item2 * Math.Sin(angle * (Math.PI / 180)));
+            double y = (robotDimentions.Item1 * Math.Sin(angle * (Math.PI / 180))) + (robotDimentions.Item2 * Math.Cos(angle * (Math.PI / 180)));
+            x = x / 12 * 100;
+            y = y / 12 * 100;
+            x = x / resizeX;
+            y = y / resizeY;
+            return new Point((int)x + 1, (int)y + 1); //+1 because we're converting double to int so we lose the decimal, this always "rounds up" the value
+        }
         //AKA the compiler
         private void SaveButton_Click(object sender, EventArgs e)
         {
@@ -373,7 +461,9 @@ namespace AutonGUI
                 traversal.offset = CenterIntakeButton.Checked;
                 traversal.reverse = ReverseButton.Checked;
                 traversal.coordinate = new Point((int)Xcord.Value, (int)Ycord.Value);
-                Controls.Find("" + lastSelectedStep, true).First().Location = new Point((int)(((double)Xcord.Value + zero.X) / resizeX) - 15, Math.Abs((int)(((double)Ycord.Value + zero.Y) / resizeY) - 559 + 15));
+                Control c = Controls.Find("" + lastSelectedStep, true).First();
+                Console.WriteLine(c.Location);
+                c.Location = new Point((int)(((double)Xcord.Value + zero.X) / resizeX - ((double)c.Size.Width / 2)), Math.Abs((int)(((double)Ycord.Value + zero.Y) / resizeY) - OverUnderBG.Size.Height + (c.Size.Width / 2)));
                 try { traversal.deg = int.Parse(DegRotateTextBox.Text); }
                 catch { traversal.deg = 0; ShowStepInfo(lastSelectedStep); }
                 try { traversal.delay = int.Parse(DelayTextBox.Text); }
@@ -485,10 +575,12 @@ namespace AutonGUI
             Point oldZero = zero;
             zero = new Point((int)SpawnXUpDown.Value, (int)SpawnYUpDown.Value);
 
+            /*
             SP.Location = new Point(
                     (int)((zero.X / resizeX) - 15),
-                    Math.Abs(559 - (int)((zero.Y) / resizeY)) - 15
+                    Math.Abs(OverUnderBG.Size.Height - (int)((zero.Y) / resizeY)) - 15
                     );
+            */
             zeroAngle = (double)SpawnAngleUpDown.Value;
 
             Point difference = new Point(zero.X - oldZero.X, zero.Y - oldZero.Y);
@@ -498,8 +590,9 @@ namespace AutonGUI
             }
             foreach (Node n in moveOrder)
             {
-                n.coordinate = new Point(n.coordinate.X - difference.X + 1, n.coordinate.Y - difference.Y + 1); //Idk why its plus one but it works
+                n.coordinate = new Point(n.coordinate.X - difference.X, n.coordinate.Y - difference.Y); //Idk why its plus one but it works
             }
+            RefreshNodeImage(true, Point.Empty, "SP", zeroAngle, 3);
         }
 
         private void OpenCodeSettingsButton_Click(object sender, EventArgs e)

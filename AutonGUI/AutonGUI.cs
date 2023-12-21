@@ -210,7 +210,6 @@ namespace AutonGUI
             nodeToAdd.Name = "" + steps;
             nodeToAdd.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
             RefreshNodeImage(false, location, "" + steps, 0, 1);
-            //UpdateAllNodeImages();
             head = nodeToAdd;
         }
         private void SimulateRightClick(Node n)
@@ -272,7 +271,7 @@ namespace AutonGUI
                 Node n = moveOrder[i];
                 Point destination = new Point(n.coordinate.X, n.coordinate.Y); //in grid units
                 double angle = GetNextAngle(currentPos, destination, heading, n.reverse);
-                
+
                 int status = 1;
                 if (lastSelectedStep == i)
                 {
@@ -382,7 +381,7 @@ namespace AutonGUI
             {
                 angle = 90 - (angle % 90);
             }
-            if(angle < 0)
+            if (angle < 0)
             {
                 angle = 90 + (angle % -90);
             }
@@ -405,10 +404,7 @@ namespace AutonGUI
             Point currentPos = new Point(); //gridUnits X,Y
             double heading = zeroAngle; //degrees -180 -> 180 range
             foreach (Node n in moveOrder)
-            {                  //turning it into feet * 12in         getting inches leftover from feet
-                //int xInches = ((n.coordinate.X / 100) * 12) + (int)(12 * ((float)(n.coordinate.X % 100) / 100));
-                //int yInches = ((n.coordinate.Y / 100) * 12) + (int)(12 * ((float)(n.coordinate.Y % 100) / 100));
-
+            {
                 /*
                  commands:
 
@@ -453,7 +449,7 @@ namespace AutonGUI
                     stringBuilder.AppendLine($"\t\tpros::delay({n.delay});");
                 }
                 currentPos = destination;
-                heading = (heading + angle)%360;
+                heading = (heading + angle) % 360;
             }
             File.WriteAllText(SaveLocation.Text, split[0] + stringBuilder + split[1]);
         }
@@ -585,13 +581,6 @@ namespace AutonGUI
         {
             Point oldZero = zero;
             zero = new Point((int)SpawnXUpDown.Value, (int)SpawnYUpDown.Value);
-
-            /*
-            SP.Location = new Point(
-                    (int)((zero.X / resizeX) - 15),
-                    Math.Abs(OverUnderBG.Size.Height - (int)((zero.Y) / resizeY)) - 15
-                    );
-            */
             zeroAngle = (double)SpawnAngleUpDown.Value;
 
             Point difference = new Point(zero.X - oldZero.X, zero.Y - oldZero.Y);

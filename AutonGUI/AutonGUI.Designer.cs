@@ -516,7 +516,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(3, 2, 3, 2);
             Name = "AutonGUI";
-            Text = "34690A Auton GUI v0.4";
+            Text = "34690A Auton GUI v0.5";
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).EndInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).EndInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).EndInit();

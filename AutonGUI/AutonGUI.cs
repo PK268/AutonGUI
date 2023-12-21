@@ -189,12 +189,12 @@ namespace AutonGUI
 
                     Point globalMousePos = Control.MousePosition;
                     Point newNodePos = PointToClient(globalMousePos);
-                    newNodePos.Y = Math.Abs(newNodePos.Y); //Making sure the offset operation didnt make negatives
-                    Point coordiante = new Point((int)(newNodePos.X * resizeX - zero.X), (int)(newNodePos.Y * resizeY - zero.Y));
-                    moveOrder.Add(new Node(steps, coordiante, false, 0));
-                    CreateNode(coordiante);
-                    Nodes.Items.Add($"{"" + steps} {coordiante}");
+                    Point coordinate = new Point((int)(newNodePos.X * resizeX - zero.X), (int)((559 - newNodePos.Y) * resizeY - zero.Y));
+                    CreateNode(coordinate);
+                    moveOrder.Add(new Node(steps, coordinate, false, 0));
+                    Nodes.Items.Add($"{"" + steps} {coordinate}");
                     steps++;
+                    UpdateAllNodeImages();
                     // Right click
                     break;
                 default:
@@ -242,6 +242,7 @@ namespace AutonGUI
             Ycord.Value = (int)(traversal.coordinate.Y);
             DegRotateTextBox.Text = "" + traversal.deg;
             DelayTextBox.Text = "" + traversal.delay;
+            UpdateAllNodeImages();
         }
         public double InchesToGridUnits(double inches)
         {
@@ -257,6 +258,7 @@ namespace AutonGUI
         {
             double x = (coordinate.X + zero.X) / resizeX;
             double y = (coordinate.Y + zero.Y) / resizeY;
+            y = 559 - y;
             x = x - ((double)nodeSize.X / 2);
             y = y - ((double)nodeSize.Y / 2);
             return new Point((int)x, (int)y);
@@ -267,29 +269,28 @@ namespace AutonGUI
             double heading = zeroAngle;
             for (int i = 0; i < moveOrder.Count; i++)
             {
-                Control c = Controls.Find("" + i, true)[0];
                 Node n = moveOrder[i];
                 Point destination = new Point(n.coordinate.X, n.coordinate.Y); //in grid units
                 double angle = GetNextAngle(currentPos, destination, heading, n.reverse);
+                
                 int status = 1;
                 if (lastSelectedStep == i)
                 {
                     status = 2;
                 }
-                RefreshNodeImage(false, new Point((int)(((n.coordinate.X + (c.Size.Width / 2)) + zero.X) / resizeX) - (c.Size.Width / 2), Math.Abs(559 - (int)((n.coordinate.Y + zero.Y - (c.Size.Height / 2)) / resizeY)) - (c.Size.Height / 2)), "" + i, angle, status);
+                heading = (heading + angle) % 360;
+                RefreshNodeImage(false, moveOrder[i].coordinate, "" + i, heading, status);
                 currentPos = destination;
-                heading = heading + angle;
             }
         }
         public void RefreshNodeImage(bool spawn, Point location, string label, double angle, int status)
         {
             var NodeToUpdate = (PictureBox)(Controls.Find(label, true)[0]);
-            Point NodeSize = GetNodeSize(robotSize, angle); //d
+            Point NodeSize = GetNodeSize(robotSize, angle);
             NodeToUpdate.Size = new Size(NodeSize);
             Point newNodePos;
             if (spawn)
             {
-
                 newNodePos = new Point((int)((zero.X) / resizeX) - (NodeSize.X / 2), Math.Abs(OverUnderBG.Size.Height - (int)((zero.Y) / resizeY)) - (NodeSize.Y / 2));
             }
             else
@@ -297,8 +298,8 @@ namespace AutonGUI
                 newNodePos = GridToLocation(location, NodeSize);
             }
             NodeToUpdate.Location = newNodePos;
-            NodeToUpdate.Image = GetNodeBitmap(robotSize, NodeSize, label, status, angle);
             NodeToUpdate.BackColor = Color.Transparent;
+            NodeToUpdate.Image = GetNodeBitmap(robotSize, NodeSize, label, status, angle);
         }
         //status:
         //1=unselected
@@ -377,6 +378,14 @@ namespace AutonGUI
         }
         public Point GetNodeSize(Tuple<double, double> robotDimentions, double angle)
         {
+            if (angle > 90)
+            {
+                angle = 90 - (angle % 90);
+            }
+            if(angle < 0)
+            {
+                angle = 90 + (angle % -90);
+            }
             double x = (robotDimentions.Item1 * Math.Cos(angle * (Math.PI / 180))) + (robotDimentions.Item2 * Math.Sin(angle * (Math.PI / 180)));
             double y = (robotDimentions.Item1 * Math.Sin(angle * (Math.PI / 180))) + (robotDimentions.Item2 * Math.Cos(angle * (Math.PI / 180)));
             x = x / 12 * 100;
@@ -444,7 +453,7 @@ namespace AutonGUI
                     stringBuilder.AppendLine($"\t\tpros::delay({n.delay});");
                 }
                 currentPos = destination;
-                heading = heading + angle;
+                heading = (heading + angle)%360;
             }
             File.WriteAllText(SaveLocation.Text, split[0] + stringBuilder + split[1]);
         }
@@ -541,12 +550,14 @@ namespace AutonGUI
                 int index = Nodes.SelectedIndex;
                 moveOrder.RemoveAt(index);
                 Control[] toRemove = Controls.Find("" + index, true);
-                Controls.Remove(toRemove.Last());
+                Controls.Remove(toRemove.First());
+                OverUnderBG.Controls.Remove(toRemove.First());
                 Nodes.ClearSelected();
                 Nodes.Items.RemoveAt(index);
                 CorrectNames();
                 steps--;
                 lastSelectedStep = -1;
+                UpdateAllNodeImages();
             }
         }
 
@@ -560,9 +571,9 @@ namespace AutonGUI
                 {
                     deficit = i - count;
                 }
-                if (Controls.Find("" + i, true).Length != 0)
+                Control[] c = Controls.Find("" + i, true);
+                if (c.Length != 0)
                 {
-                    Controls.Find("" + i, true)[0].Text = "" + (i - deficit);
                     Controls.Find("" + i, true)[0].Name = "" + (i - deficit);
                     Nodes.Items[i - deficit] = "" + (i - deficit) + " {X=" + moveOrder[i - deficit].coordinate.X + ",Y=" + moveOrder[i - deficit].coordinate.Y + "}";
                     count++;

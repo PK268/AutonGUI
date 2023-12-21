@@ -33,7 +33,7 @@
             textBox3 = new TextBox();
             UpdateButtonCS = new Button();
             textBox4 = new TextBox();
-            label1 = new Label();
+            CSLengthLabel = new Label();
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
@@ -60,7 +60,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(175, 171);
+            textBox3.Location = new Point(145, 177);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(58, 23);
             textBox3.TabIndex = 2;
@@ -76,30 +76,30 @@
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(292, 171);
+            textBox4.Location = new Point(278, 177);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(58, 23);
             textBox4.TabIndex = 5;
             // 
-            // label1
+            // CSLengthLabel
             // 
-            label1.AutoSize = true;
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(122, 174);
-            label1.Name = "label1";
-            label1.Size = new Size(47, 15);
-            label1.TabIndex = 6;
-            label1.Text = "Length:";
+            CSLengthLabel.AutoSize = true;
+            CSLengthLabel.ForeColor = Color.White;
+            CSLengthLabel.Location = new Point(135, 159);
+            CSLengthLabel.Name = "CSLengthLabel";
+            CSLengthLabel.Size = new Size(68, 15);
+            CSLengthLabel.TabIndex = 6;
+            CSLengthLabel.Text = "Length (in):";
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.ForeColor = Color.White;
-            label2.Location = new Point(247, 174);
+            label2.Location = new Point(278, 159);
             label2.Name = "label2";
-            label2.Size = new Size(42, 15);
+            label2.Size = new Size(63, 15);
             label2.TabIndex = 7;
-            label2.Text = "Width:";
+            label2.Text = "Width (in):";
             // 
             // label3
             // 
@@ -135,7 +135,7 @@
             // 
             label6.AutoSize = true;
             label6.ForeColor = Color.White;
-            label6.Location = new Point(187, 132);
+            label6.Location = new Point(190, 128);
             label6.Name = "label6";
             label6.Size = new Size(102, 15);
             label6.TabIndex = 11;
@@ -163,7 +163,7 @@
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(CSLengthLabel);
             Controls.Add(textBox4);
             Controls.Add(UpdateButtonCS);
             Controls.Add(textBox3);
@@ -182,7 +182,7 @@
         private TextBox textBox3;
         private Button UpdateButtonCS;
         private TextBox textBox4;
-        private Label label1;
+        private Label CSLengthLabel;
         private Label label2;
         private Label label3;
         private Label label4;

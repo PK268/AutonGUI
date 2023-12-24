@@ -66,6 +66,7 @@
             AngleReferencePictureBox = new PictureBox();
             SpawnUpdateButton = new Button();
             OpenCodeSettingsButton = new Button();
+            RefreshAllButton = new Button();
             ((System.ComponentModel.ISupportInitialize)OverUnderBG).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Xcord).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Ycord).BeginInit();
@@ -177,7 +178,7 @@
             Nodes.ForeColor = Color.Black;
             Nodes.FormattingEnabled = true;
             Nodes.ItemHeight = 15;
-            Nodes.Location = new Point(587, 326);
+            Nodes.Location = new Point(588, 327);
             Nodes.Name = "Nodes";
             Nodes.Size = new Size(129, 184);
             Nodes.TabIndex = 13;
@@ -464,20 +465,33 @@
             // 
             OpenCodeSettingsButton.BackColor = Color.DimGray;
             OpenCodeSettingsButton.ForeColor = Color.White;
-            OpenCodeSettingsButton.Location = new Point(697, 108);
+            OpenCodeSettingsButton.Location = new Point(852, 20);
             OpenCodeSettingsButton.Name = "OpenCodeSettingsButton";
-            OpenCodeSettingsButton.Size = new Size(142, 40);
+            OpenCodeSettingsButton.Size = new Size(120, 67);
             OpenCodeSettingsButton.TabIndex = 39;
             OpenCodeSettingsButton.Text = "Open CodeGen Settings";
             OpenCodeSettingsButton.UseVisualStyleBackColor = false;
             OpenCodeSettingsButton.Click += OpenCodeSettingsButton_Click;
+            // 
+            // RefreshAllButton
+            // 
+            RefreshAllButton.BackColor = Color.DimGray;
+            RefreshAllButton.ForeColor = Color.White;
+            RefreshAllButton.Location = new Point(852, 126);
+            RefreshAllButton.Name = "RefreshAllButton";
+            RefreshAllButton.Size = new Size(120, 67);
+            RefreshAllButton.TabIndex = 40;
+            RefreshAllButton.Text = "Refesh All Nodes";
+            RefreshAllButton.UseVisualStyleBackColor = false;
+            RefreshAllButton.Click += RefreshAllButton_Click;
             // 
             // AutonGUI
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
-            ClientSize = new Size(856, 560);
+            ClientSize = new Size(984, 560);
+            Controls.Add(RefreshAllButton);
             Controls.Add(OpenCodeSettingsButton);
             Controls.Add(SpawnUpdateButton);
             Controls.Add(AngleReferencePictureBox);
@@ -567,5 +581,6 @@
         private PictureBox AngleReferencePictureBox;
         private Button SpawnUpdateButton;
         private Button OpenCodeSettingsButton;
+        private Button RefreshAllButton;
     }
 }

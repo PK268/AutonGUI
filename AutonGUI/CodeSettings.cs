@@ -25,5 +25,19 @@ namespace AutonGUI
             helpPage.StartInfo.FileName = "https://github.com/PK268/AutonGUI/wiki/";
             helpPage.Start();
         }
+
+        private void CSUpdateButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                AutonGUI.OdomChassisControllerVariableName = CSVariableTextBox.Text;
+                AutonGUI.IntakeMotorGroupVariableName = CSVariableTextBox2.Text;
+                AutonGUI.RobotSize = new Tuple<double, double>(double.Parse(CSWidthTextBox.Text), double.Parse(CSLengthTextBox.Text));
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

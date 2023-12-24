@@ -28,58 +28,59 @@
         /// </summary>
         private void InitializeComponent()
         {
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
-            UpdateButtonCS = new Button();
-            textBox4 = new TextBox();
+            CSVariableTextBox = new TextBox();
+            CSVariableTextBox2 = new TextBox();
+            CSLengthTextBox = new TextBox();
+            CSUpdateButton = new Button();
+            CSWidthTextBox = new TextBox();
             CSLengthLabel = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            label5 = new Label();
-            label6 = new Label();
-            CodeSettingsInfoButton = new Button();
+            CSWidthLabel = new Label();
+            CSVariableLabel2 = new Label();
+            CSVariableLabel = new Label();
+            CSCodegenSettingsLabel = new Label();
+            CSRobotDimentionsLabel = new Label();
+            CSInfoButton = new Button();
             SuspendLayout();
             // 
-            // textBox1
+            // CSVariableTextBox
             // 
-            textBox1.Location = new Point(341, 48);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 0;
-            textBox1.Text = "chassis";
+            CSVariableTextBox.Location = new Point(341, 48);
+            CSVariableTextBox.Name = "CSVariableTextBox";
+            CSVariableTextBox.Size = new Size(100, 23);
+            CSVariableTextBox.TabIndex = 0;
+            CSVariableTextBox.Text = "chassis";
             // 
-            // textBox2
+            // CSVariableTextBox2
             // 
-            textBox2.Location = new Point(341, 84);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 1;
-            textBox2.Text = "intake";
+            CSVariableTextBox2.Location = new Point(341, 84);
+            CSVariableTextBox2.Name = "CSVariableTextBox2";
+            CSVariableTextBox2.Size = new Size(100, 23);
+            CSVariableTextBox2.TabIndex = 1;
+            CSVariableTextBox2.Text = "intake";
             // 
-            // textBox3
+            // CSLengthTextBox
             // 
-            textBox3.Location = new Point(145, 177);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(58, 23);
-            textBox3.TabIndex = 2;
+            CSLengthTextBox.Location = new Point(145, 177);
+            CSLengthTextBox.Name = "CSLengthTextBox";
+            CSLengthTextBox.Size = new Size(58, 23);
+            CSLengthTextBox.TabIndex = 2;
             // 
-            // UpdateButtonCS
+            // CSUpdateButton
             // 
-            UpdateButtonCS.Location = new Point(196, 216);
-            UpdateButtonCS.Name = "UpdateButtonCS";
-            UpdateButtonCS.Size = new Size(89, 35);
-            UpdateButtonCS.TabIndex = 4;
-            UpdateButtonCS.Text = "Update";
-            UpdateButtonCS.UseVisualStyleBackColor = true;
+            CSUpdateButton.Location = new Point(196, 216);
+            CSUpdateButton.Name = "CSUpdateButton";
+            CSUpdateButton.Size = new Size(89, 35);
+            CSUpdateButton.TabIndex = 4;
+            CSUpdateButton.Text = "Update";
+            CSUpdateButton.UseVisualStyleBackColor = true;
+            CSUpdateButton.Click += CSUpdateButton_Click;
             // 
-            // textBox4
+            // CSWidthTextBox
             // 
-            textBox4.Location = new Point(278, 177);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(58, 23);
-            textBox4.TabIndex = 5;
+            CSWidthTextBox.Location = new Point(278, 177);
+            CSWidthTextBox.Name = "CSWidthTextBox";
+            CSWidthTextBox.Size = new Size(58, 23);
+            CSWidthTextBox.TabIndex = 5;
             // 
             // CSLengthLabel
             // 
@@ -91,65 +92,65 @@
             CSLengthLabel.TabIndex = 6;
             CSLengthLabel.Text = "Length (in):";
             // 
-            // label2
+            // CSWidthLabel
             // 
-            label2.AutoSize = true;
-            label2.ForeColor = Color.White;
-            label2.Location = new Point(278, 159);
-            label2.Name = "label2";
-            label2.Size = new Size(63, 15);
-            label2.TabIndex = 7;
-            label2.Text = "Width (in):";
+            CSWidthLabel.AutoSize = true;
+            CSWidthLabel.ForeColor = Color.White;
+            CSWidthLabel.Location = new Point(278, 159);
+            CSWidthLabel.Name = "CSWidthLabel";
+            CSWidthLabel.Size = new Size(63, 15);
+            CSWidthLabel.TabIndex = 7;
+            CSWidthLabel.Text = "Width (in):";
             // 
-            // label3
+            // CSVariableLabel2
             // 
-            label3.AutoSize = true;
-            label3.ForeColor = Color.White;
-            label3.Location = new Point(183, 87);
-            label3.Name = "label3";
-            label3.Size = new Size(153, 15);
-            label3.TabIndex = 8;
-            label3.Text = "MotorGroup variable name:";
+            CSVariableLabel2.AutoSize = true;
+            CSVariableLabel2.ForeColor = Color.White;
+            CSVariableLabel2.Location = new Point(183, 87);
+            CSVariableLabel2.Name = "CSVariableLabel2";
+            CSVariableLabel2.Size = new Size(153, 15);
+            CSVariableLabel2.TabIndex = 8;
+            CSVariableLabel2.Text = "MotorGroup variable name:";
             // 
-            // label4
+            // CSVariableLabel
             // 
-            label4.AutoSize = true;
-            label4.ForeColor = Color.White;
-            label4.Location = new Point(23, 51);
-            label4.Name = "label4";
-            label4.Size = new Size(306, 15);
-            label4.TabIndex = 9;
-            label4.Text = "std::shared_ptr<OdomChassisController> variable name:";
+            CSVariableLabel.AutoSize = true;
+            CSVariableLabel.ForeColor = Color.White;
+            CSVariableLabel.Location = new Point(23, 51);
+            CSVariableLabel.Name = "CSVariableLabel";
+            CSVariableLabel.Size = new Size(306, 15);
+            CSVariableLabel.TabIndex = 9;
+            CSVariableLabel.Text = "std::shared_ptr<OdomChassisController> variable name:";
             // 
-            // label5
+            // CSCodegenSettingsLabel
             // 
-            label5.AutoSize = true;
-            label5.ForeColor = Color.White;
-            label5.Location = new Point(190, 19);
-            label5.Name = "label5";
-            label5.Size = new Size(99, 15);
-            label5.TabIndex = 10;
-            label5.Text = "Codegen settigns";
+            CSCodegenSettingsLabel.AutoSize = true;
+            CSCodegenSettingsLabel.ForeColor = Color.White;
+            CSCodegenSettingsLabel.Location = new Point(190, 19);
+            CSCodegenSettingsLabel.Name = "CSCodegenSettingsLabel";
+            CSCodegenSettingsLabel.Size = new Size(100, 15);
+            CSCodegenSettingsLabel.TabIndex = 10;
+            CSCodegenSettingsLabel.Text = "Codegen Settings";
             // 
-            // label6
+            // CSRobotDimentionsLabel
             // 
-            label6.AutoSize = true;
-            label6.ForeColor = Color.White;
-            label6.Location = new Point(190, 128);
-            label6.Name = "label6";
-            label6.Size = new Size(102, 15);
-            label6.TabIndex = 11;
-            label6.Text = "Robot dimentions";
+            CSRobotDimentionsLabel.AutoSize = true;
+            CSRobotDimentionsLabel.ForeColor = Color.White;
+            CSRobotDimentionsLabel.Location = new Point(190, 128);
+            CSRobotDimentionsLabel.Name = "CSRobotDimentionsLabel";
+            CSRobotDimentionsLabel.Size = new Size(102, 15);
+            CSRobotDimentionsLabel.TabIndex = 11;
+            CSRobotDimentionsLabel.Text = "Robot dimentions";
             // 
-            // CodeSettingsInfoButton
+            // CSInfoButton
             // 
-            CodeSettingsInfoButton.Location = new Point(447, 66);
-            CodeSettingsInfoButton.Name = "CodeSettingsInfoButton";
-            CodeSettingsInfoButton.Size = new Size(25, 23);
-            CodeSettingsInfoButton.TabIndex = 12;
-            CodeSettingsInfoButton.Text = "?";
-            CodeSettingsInfoButton.UseVisualStyleBackColor = true;
-            CodeSettingsInfoButton.Click += CodeSettingsInfoButton_Click;
+            CSInfoButton.Location = new Point(447, 66);
+            CSInfoButton.Name = "CSInfoButton";
+            CSInfoButton.Size = new Size(25, 23);
+            CSInfoButton.TabIndex = 12;
+            CSInfoButton.Text = "?";
+            CSInfoButton.UseVisualStyleBackColor = true;
+            CSInfoButton.Click += CodeSettingsInfoButton_Click;
             // 
             // CodeSettings
             // 
@@ -157,18 +158,18 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DimGray;
             ClientSize = new Size(479, 276);
-            Controls.Add(CodeSettingsInfoButton);
-            Controls.Add(label6);
-            Controls.Add(label5);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
+            Controls.Add(CSInfoButton);
+            Controls.Add(CSRobotDimentionsLabel);
+            Controls.Add(CSCodegenSettingsLabel);
+            Controls.Add(CSVariableLabel);
+            Controls.Add(CSVariableLabel2);
+            Controls.Add(CSWidthLabel);
             Controls.Add(CSLengthLabel);
-            Controls.Add(textBox4);
-            Controls.Add(UpdateButtonCS);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
-            Controls.Add(textBox1);
+            Controls.Add(CSWidthTextBox);
+            Controls.Add(CSUpdateButton);
+            Controls.Add(CSLengthTextBox);
+            Controls.Add(CSVariableTextBox2);
+            Controls.Add(CSVariableTextBox);
             Name = "CodeSettings";
             Text = "CodeSettings";
             ResumeLayout(false);
@@ -177,17 +178,17 @@
 
         #endregion
 
-        private TextBox textBox1;
-        private TextBox textBox2;
-        private TextBox textBox3;
-        private Button UpdateButtonCS;
-        private TextBox textBox4;
+        private TextBox CSVariableTextBox;
+        private TextBox CSVariableTextBox2;
+        private TextBox CSLengthTextBox;
+        private Button CSUpdateButton;
+        private TextBox CSWidthTextBox;
         private Label CSLengthLabel;
-        private Label label2;
-        private Label label3;
-        private Label label4;
-        private Label label5;
-        private Label label6;
-        private Button CodeSettingsInfoButton;
+        private Label CSWidthLabel;
+        private Label CSVariableLabel2;
+        private Label CSVariableLabel;
+        private Label CSCodegenSettingsLabel;
+        private Label CSRobotDimentionsLabel;
+        private Button CSInfoButton;
     }
 }

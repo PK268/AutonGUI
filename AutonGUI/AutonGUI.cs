@@ -68,11 +68,14 @@ namespace AutonGUI
         static PictureBox head;
         static List<Node> moveOrder = new List<Node>();
         static Point zero = new Point(300, 100);
-        static double zeroAngle = 0;
-        static Tuple<double, double> robotSize = new Tuple<double, double>(12.8, 15.5); //in inches
+        public static double zeroAngle = 0;
+        public static Tuple<double, double> RobotSize = new Tuple<double, double>(12.8, 15.5); //in inches
+        public static string OdomChassisControllerVariableName = "chassis";
+        public static string IntakeMotorGroupVariableName = "intake";
         public AutonGUI()
         {
             InitializeComponent();
+            OverUnderBG.SendToBack();
             var SP = new PictureBox();
             OverUnderBG.Controls.Add(SP);
             SP.Name = "SP";
@@ -81,7 +84,7 @@ namespace AutonGUI
             RefreshNodeImage(true, Point.Empty, "SP", zeroAngle, 3);
             head = SP;
         }
-        double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
+        static double GetNextAngle(Point current, Point destination, double currentHeading, bool backwards)
         {
             double angle = 0;
             double rTD = (double)180 / Math.PI;
@@ -205,19 +208,15 @@ namespace AutonGUI
         {
             var nodeToAdd = new PictureBox();
             OverUnderBG.Controls.Add(nodeToAdd);
+            //head.Controls.Add(nodeToAdd);
+            nodeToAdd.Location = Point.Empty;
             nodeToAdd.SizeMode = PictureBoxSizeMode.Zoom;
             nodeToAdd.BringToFront();
             nodeToAdd.Name = "" + steps;
             nodeToAdd.Click += (sender, e) => { ShowStepInfo(Convert.ToInt32(sender.GetType().GetProperty("Name").GetValue(sender, null))); };
             RefreshNodeImage(false, location, "" + steps, 0, 1);
+            //nodeToAdd.Parent = head;
             head = nodeToAdd;
-        }
-        private void SimulateRightClick(Node n)
-        {
-            Point newNodePos = new Point((int)(((n.coordinate.X) + zero.X) / resizeX) - 15, Math.Abs(559 - (int)((n.coordinate.Y + zero.Y) / resizeY)) - 15);
-            CreateNode(newNodePos);
-            Nodes.Items.Add($"{"" + steps} {new Point(n.coordinate.X, n.coordinate.Y)}");
-            steps++;
         }
         public void ShowStepInfo(int index)
         {
@@ -225,10 +224,8 @@ namespace AutonGUI
             {
                 Nodes.SelectedIndex = index;
             }
-            for (int i = 0; i < steps; i++)
-            {
-                RefreshNodeImage(false, moveOrder[i].coordinate, "" + i, 0, 1);
-            }
+            RefreshNodeImage(false, moveOrder[lastSelectedStep].coordinate, "" + lastSelectedStep, 0, 1);
+
             Control indexNode = this.Controls.Find("" + index, true).First();
             indexNode.BackColor = Color.Red;
             RefreshNodeImage(false, moveOrder[index].coordinate, "" + index, 0, 2);
@@ -243,6 +240,7 @@ namespace AutonGUI
             DelayTextBox.Text = "" + traversal.delay;
             UpdateAllNodeImages();
         }
+        #region Unit Conversion
         public double InchesToGridUnits(double inches)
         {
             return inches / 12 * 100;
@@ -262,6 +260,7 @@ namespace AutonGUI
             y = y - ((double)nodeSize.Y / 2);
             return new Point((int)x, (int)y);
         }
+        #endregion
         public void UpdateAllNodeImages()
         {
             Point currentPos = new Point(); //gridUnits X,Y
@@ -284,8 +283,8 @@ namespace AutonGUI
         }
         public void RefreshNodeImage(bool spawn, Point location, string label, double angle, int status)
         {
-            var NodeToUpdate = (PictureBox)(Controls.Find(label, true)[0]);
-            Point NodeSize = GetNodeSize(robotSize, angle);
+            var NodeToUpdate = (PictureBox)(OverUnderBG.Controls.Find(label, true)[0]);
+            Point NodeSize = GetNodeSize(RobotSize, angle);
             NodeToUpdate.Size = new Size(NodeSize);
             Point newNodePos;
             if (spawn)
@@ -297,8 +296,13 @@ namespace AutonGUI
                 newNodePos = GridToLocation(location, NodeSize);
             }
             NodeToUpdate.Location = newNodePos;
+            if (NodeToUpdate.Image != null)
+            {
+                NodeToUpdate.Image.Dispose();
+            }
+            Bitmap newImage = GetNodeBitmap(RobotSize, NodeSize, label, status, angle);
+            NodeToUpdate.Image = newImage;
             NodeToUpdate.BackColor = Color.Transparent;
-            NodeToUpdate.Image = GetNodeBitmap(robotSize, NodeSize, label, status, angle);
         }
         //status:
         //1=unselected
@@ -338,6 +342,7 @@ namespace AutonGUI
                 color = Color.FromKnownColor(KnownColor.DarkSlateGray);
             }
             SolidBrush brush = new SolidBrush(color);
+            SolidBrush angleBrush = new SolidBrush(Color.FromKnownColor(KnownColor.White));
             int width = (int)(resolutionX * ((InchesToGridUnits(robotDimentions.Item1) / (containerSize.X * resizeX))));
             int height = (int)(resolutionY * ((InchesToGridUnits(robotDimentions.Item2) / (containerSize.Y * resizeY))));
 
@@ -345,6 +350,7 @@ namespace AutonGUI
             int offsetY = (resolutionY - height) / 2;
 
             Rectangle rect = new Rectangle(offsetX, offsetY, width, height);
+            Rectangle angleRect = new Rectangle(offsetX + width / 2, offsetY, width / 10, height / 10);
             if (angle != 0)
             {
                 g.TranslateTransform((float)bitmap.Width / 2, (float)bitmap.Height / 2);
@@ -353,6 +359,7 @@ namespace AutonGUI
             }
 
             g.FillRectangle(brush, rect);
+            g.FillRectangle(angleBrush, angleRect);
 
             if (angle != 0)
             {
@@ -420,16 +427,6 @@ namespace AutonGUI
                     distance = -1 * distance;
                 }
 
-                //Replacement for angle != 0 according to codacy, comapring floating point can cause errors
-                if (angle < -0.01 || angle > 0.01)
-                {
-                    stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);");
-                }
-                if (distance < -0.01 || distance > 0.01)
-                {
-                    stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);");
-                }
-
                 /*
                 if (!n.offset)
                     commands += $"\t\tchassis->driveToPoint({{{xInches}_in, {yInches}_in}}, {n.reverse.ToString().ToLower()});\n";
@@ -448,6 +445,17 @@ namespace AutonGUI
                 {
                     stringBuilder.AppendLine($"\t\tpros::delay({n.delay});");
                 }
+
+                //Replacement for angle != 0 according to codacy, comapring floating point can cause errors
+                if (angle < -0.01 || angle > 0.01)
+                {
+                    stringBuilder.AppendLine($"\t\tchassis->turnAngle({angle}_deg);");
+                }
+                if (distance < -0.01 || distance > 0.01)
+                {
+                    stringBuilder.AppendLine($"\t\tchassis->moveDistance({distance / 100 * 12}_in);");
+                }
+
                 currentPos = destination;
                 heading = (heading + angle) % 360;
             }
@@ -506,6 +514,16 @@ namespace AutonGUI
             }
         }
 
+        #region Saving and Loading JSON
+        private void SimulateRightClick(Node n, bool addToNodes)
+        {
+            CreateNode(n.coordinate);
+            if (addToNodes)
+            {
+                Nodes.Items.Add($"{"" + steps} {new Point(n.coordinate.X, n.coordinate.Y)}");
+            }
+            steps++;
+        }
         private void SaveJsonButton_Click(object sender, EventArgs e)
         {
             DestinationFileDialog1.ShowDialog(this);
@@ -534,10 +552,12 @@ namespace AutonGUI
                 SpawnUpdateButton_Click(null, null);
                 foreach (Node n in moveOrder)
                 {
-                    SimulateRightClick(n);
+                    SimulateRightClick(n, true);
                 }
+                UpdateAllNodeImages();
             }
         }
+        #endregion
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
@@ -599,6 +619,26 @@ namespace AutonGUI
         {
             CodeSettings codeSettings = new CodeSettings();
             codeSettings.Show();
+        }
+
+        public void DeleteAllNodes(bool fromMoveOrderToo)
+        {
+            for (int i = 0; i < steps; i++)
+            {
+                Controls.Remove(Controls.Find("" + i, true)[0]);
+                OverUnderBG.Controls.Remove(OverUnderBG.Controls.Find("" + i, true)[0]);
+            }
+            steps = 0;
+        }
+        private void RefreshAllButton_Click(object sender, EventArgs e)
+        {
+            DeleteAllNodes(false);
+            foreach (Node n in moveOrder)
+            {
+                SimulateRightClick(n, false);
+            }
+            UpdateAllNodeImages();
+            RefreshNodeImage(true, Point.Empty, "SP", zeroAngle, 3);
         }
     }
 }
